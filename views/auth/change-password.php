@@ -4,18 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Employee Management System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <title>Change Password - Employee Management System</title>
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
     <style>
+
         :root {
             --bg: #f5f7fb;
             --panel: #ffffff;
             --panel-border: #e5e7eb;
             --primary: #1f2937;
-            --primary-soft: #e5e7eb;
             --accent: #4f46e5;
             --text: #111827;
             --muted: #6b7280;
@@ -63,7 +80,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #111827 0%, #4f46e5 100%);
+            background: linear-gradient(
+                135deg,
+                #111827 0%,
+                #4f46e5 100%
+            );
             color: #fff;
             font-size: 1.5rem;
             font-weight: 800;
@@ -135,7 +156,9 @@
             background: #fff;
             font-size: 0.96rem;
             color: var(--text);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
         }
 
         .form-control:focus {
@@ -150,12 +173,18 @@
             border: none;
             border-radius: 12px;
             padding: 0.9rem 1rem;
-            background: linear-gradient(135deg, #111827 0%, #4f46e5 100%);
+            background: linear-gradient(
+                135deg,
+                #111827 0%,
+                #4f46e5 100%
+            );
             color: #fff;
             font-size: 0.98rem;
             font-weight: 700;
             letter-spacing: 0.02em;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
             box-shadow: 0 12px 22px rgba(79, 70, 229, 0.18);
         }
 
@@ -170,6 +199,7 @@
         }
 
         @media (max-width: 575.98px) {
+
             .login-card {
                 padding: 1.5rem 1.1rem;
             }
@@ -182,61 +212,141 @@
                 font-size: 1.75rem;
             }
         }
+
     </style>
+
 </head>
 
 <body>
-    <div class="login-shell">
-        <div class="login-card">
-            <div class="brand">
-                <div class="brand-mark">E</div>
-                <h1 class="brand-title">Employee App</h1>
+
+<div class="login-shell">
+
+    <div class="login-card">
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                E
             </div>
 
-            <div class="login-header">
-                <span class="eyebrow">Access portal</span>
-                <h3>Sign In</h3>
-                <p>Use your email or username to continue.</p>
-            </div>
+            <h1 class="brand-title">
+                Employee App
+            </h1>
+
+        </div>
+
+
+        <div class="login-header">
+
+            <span class="eyebrow">
+                Account Security
+            </span>
+
+            <h3>
+                Change Password
+            </h3>
+
+            <p>
+                Update your password securely.
+            </p>
+
+        </div>
 <?php if ($message !== ""): ?>
 
-    <div class="alert alert-danger">
-        <?= htmlspecialchars($message) ?>
-    </div>
+    <?php if ($message === "Password changed successfully"): ?>
+
+        <div class="alert alert-success">
+            <?= htmlspecialchars($message) ?>
+        </div>
+
+    <?php else: ?>
+
+        <div class="alert alert-danger">
+            <?= htmlspecialchars($message) ?>
+        </div>
+
+    <?php endif; ?>
 
 <?php endif; ?>
-            <form method="POST" action="/Employee_App/public/login.php">
-                <div class="form-group">
-                    <label for="login">Email or Username</label>
-                    <input
-                        type="text"
-                        id="login"
-                        name="login"
-                        class="form-control"
-                        placeholder="Enter email or username"
-                        required
-                        autofocus
-                    >
-                </div>
 
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        class="form-control"
-                        placeholder="Enter password"
-                        required
-                    >
-                </div>
+        <form
+            method="POST"
+            action="/Employee_App/public/change-password.php"
+        >
 
-                <button type="submit" class="btn btn-login">Sign In</button>
-            </form>
-        </div>
+            <div class="form-group">
+
+                <label for="current_password">
+                    Current Password
+                </label>
+
+                <input
+                    type="password"
+                    id="current_password"
+                    name="current_password"
+                    class="form-control"
+                    placeholder="Enter current password"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="new_password">
+                    New Password
+                </label>
+
+                <input
+                    type="password"
+                    id="new_password"
+                    name="new_password"
+                    class="form-control"
+                    placeholder="Enter new password"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="confirm_password">
+                    Confirm New Password
+                </label>
+
+                <input
+                    type="password"
+                    id="confirm_password"
+                    name="confirm_password"
+                    class="form-control"
+                    placeholder="Confirm new password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-login">
+
+                Change Password
+
+            </button>
+
+        </form>
+
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+</script>
+
 </body>
 
 </html>
