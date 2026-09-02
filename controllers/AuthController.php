@@ -42,7 +42,7 @@ class AuthController
         $_SESSION["name"] = $user["name"];
         $_SESSION["role"] = $user["role"];
 
-        header("Location: dashboard.php");
+        header("Location: ../views/auth/admin/dashboard.php");
         exit;
     }
 
