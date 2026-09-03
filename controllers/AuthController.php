@@ -51,7 +51,9 @@ class AuthController
         $newPassword,
         $confirmPassword
     ) {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
         if (!isset($_SESSION["user_id"])) {
             return "User is not logged in";

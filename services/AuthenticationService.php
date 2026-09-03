@@ -26,7 +26,7 @@ class AuthenticationService
             return "Username or password is wrong";
         }
 
-        if ($user["status"] !== "Active") {
+        if ($user["status"] !== "active") {
             return "User account is inactive";
         }
 
