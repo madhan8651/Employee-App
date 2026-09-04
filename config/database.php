@@ -1,9 +1,17 @@
 <?php
 
-$host = "localhost";
-$dbname = "employee_management";
-$username = "root";
-$password = "";
+$envFile = __DIR__ . "/../.env";
+
+if (!file_exists($envFile)) {
+    die("Environment file not found.");
+}
+
+$env = parse_ini_file($envFile);
+
+$host = $env["DB_HOST"] ?? "";
+$dbname = $env["DB_NAME"] ?? "";
+$username = $env["DB_USER"] ?? "";
+$password = $env["DB_PASSWORD"] ?? "";
 
 try {
 
@@ -25,6 +33,6 @@ try {
 
 } catch (PDOException $e) {
 
-    die("Database connection failed: " . $e->getMessage());
+    die("Database connection failed.");
 
 }

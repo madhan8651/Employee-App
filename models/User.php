@@ -74,4 +74,43 @@ public function findByUserId($user_id){
 
     return $stmt->fetch();
 }
+public function existsByEmailOrUsername($email, $username)
+{
+    $sql = "
+        SELECT user_id
+        FROM users
+        WHERE email = :email
+           OR username = :username
+        LIMIT 1
+    ";
+
+    $stmt = $this->pdo->prepare($sql);
+
+    $stmt->execute([
+        "email" => $email,
+        "username" => $username
+    ]);
+
+    return $stmt->fetch() !== false;
+}
+public function createUser($name, $email, $username, $password, $role, $status)
+{
+    $sql = "
+        INSERT INTO users
+        (name, email, username, password, role, status)
+        VALUES
+        (:name, :email, :username, :password, :role, :status)
+    ";
+
+    $stmt = $this->pdo->prepare($sql);
+
+    return $stmt->execute([
+        "name" => $name,
+        "email" => $email,
+        "username" => $username,
+        "password" => $password,
+        "role" => $role,
+        "status" => $status
+    ]);
+}
 }

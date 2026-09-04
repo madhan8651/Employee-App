@@ -2,19 +2,22 @@
 
 class RoleMiddleware
 {
-    public function handle($requiredRole)
+    public static function check($requiredRole)
     {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
         if (!isset($_SESSION["role"])) {
-            header("Location: login.php");
+            header("Location: ../auth/login.php");
             exit;
         }
 
         if ($_SESSION["role"] !== $requiredRole) {
             http_response_code(403);
-            echo "Access denied";
-            exit;
+            die("Access denied.");
         }
+
+        return true;
     }
 }
