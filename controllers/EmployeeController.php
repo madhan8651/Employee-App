@@ -611,15 +611,25 @@ public function countFilteredEmployees(
     // DEACTIVATE EMPLOYEE
     // =========================
 
-    public function deactivateEmployee(
-        $employee_id
-    ) {
-        return $this->employeeModel
-            ->updateEmployee(
-                $employee_id,
-                [
-                    "status" => "inactive"
-                ]
-            );
+    public function deactivateEmployee($employee_id)
+{
+    $success = $this->employeeModel->updateEmployee(
+        $employee_id,
+        [
+            "status" => "inactive"
+        ]
+    );
+
+    if ($success) {
+        return [
+            "success" => true,
+            "message" => "Employee deactivated successfully."
+        ];
     }
+
+    return [
+        "success" => false,
+        "message" => "Employee could not be deactivated."
+    ];
+}
 }
