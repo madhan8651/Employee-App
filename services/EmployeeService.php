@@ -37,46 +37,7 @@ class EmployeeService
             "success" => true
         ];
     }
-    public function validateProfilePhoto($file)
-{
-    if ($file["error"] !== UPLOAD_ERR_OK) {
-        return [
-            "success" => false,
-            "message" => "Failed to upload profile photo."
-        ];
-    }
 
-    $maxFileSize = 2 * 1024 * 1024;
-
-    if ($file["size"] > $maxFileSize) {
-        return [
-            "success" => false,
-            "message" => "Profile photo must be less than 2 MB."
-        ];
-    }
-
-    $finfo = new finfo(FILEINFO_MIME_TYPE);
-
-    $fileType = $finfo->file($file["tmp_name"]);
-
-    $allowedTypes = [
-        "image/jpeg" => "jpg",
-        "image/png"  => "png",
-        "image/webp" => "webp"
-    ];
-
-    if (!array_key_exists($fileType, $allowedTypes)) {
-        return [
-            "success" => false,
-            "message" => "Only JPG, PNG and WEBP images are allowed."
-        ];
-    }
-
-    return [
-        "success" => true,
-        "extension" => $allowedTypes[$fileType]
-    ];
-}
 public function validateRequiredFields($data)
 {
     $requiredFields = [

@@ -9,7 +9,9 @@ class AuthMiddleware
         }
 
         if (!isset($_SESSION["user_id"])) {
-            header("Location: ../auth/login.php");
+            header(
+                "Location: /Employee_App/public/login.php"
+            );
             exit;
         }
 

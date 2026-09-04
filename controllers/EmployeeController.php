@@ -2,20 +2,32 @@
 
 require_once __DIR__ . "/../models/Employee.php";
 require_once __DIR__ . "/../services/EmployeeService.php";
+require_once __DIR__ . "/../utilities/FileUpload.php";
 require_once __DIR__ . "/../config/database.php";
-
 class EmployeeController
 {
     private $employeeModel;
     private $employeeService;
+    private $fileUpload;
 
     public function __construct()
-    {
-        global $pdo;
+{
+    global $pdo;
 
-        $this->employeeModel = new Employee($pdo);
-        $this->employeeService = new EmployeeService($this->employeeModel);
-    }
+    $this->employeeModel = new Employee($pdo);
+
+    $this->employeeService =
+        new EmployeeService(
+            $this->employeeModel
+        );
+
+    $uploadDirectory =
+        __DIR__ .
+        "/../public/uploads/employees/";
+
+    $this->fileUpload =
+        new FileUpload($uploadDirectory);
+}
 
     // =========================
     // CREATE EMPLOYEE
@@ -73,19 +85,7 @@ class EmployeeController
         }
 
 
-        // =========================
-        // CHECK DUPLICATE ID / EMAIL
-        // =========================
-
-        $duplicateCheck =
-            $this->employeeService->checkDuplicate(
-                $employee_id,
-                $email
-            );
-
-        if (!$duplicateCheck["success"]) {
-            return $duplicateCheck;
-        }
+        
 
 
         // =========================
@@ -94,50 +94,23 @@ class EmployeeController
 
         $profilePhoto = "";
 
-        if (
-            $profile_photo !== null &&
-            $profile_photo["error"] !== UPLOAD_ERR_NO_FILE
-        ) {
+if (
+    $profile_photo !== null &&
+    $profile_photo["error"] !== UPLOAD_ERR_NO_FILE
+) {
 
-            $photoValidation =
-                $this->employeeService->validateProfilePhoto(
-                    $profile_photo
-                );
+    $uploadResult =
+        $this->fileUpload->upload(
+            $profile_photo
+        );
 
-            if (!$photoValidation["success"]) {
-                return $photoValidation;
-            }
+    if (!$uploadResult["success"]) {
+        return $uploadResult;
+    }
 
-            $extension = $photoValidation["extension"];
-
-            $uploadDir =
-                __DIR__ .
-                "/../public/uploads/employees/";
-
-            $fileName =
-                uniqid("emp_", true) .
-                "." .
-                $extension;
-
-            $uploadPath =
-                $uploadDir .
-                $fileName;
-
-            if (
-                !move_uploaded_file(
-                    $profile_photo["tmp_name"],
-                    $uploadPath
-                )
-            ) {
-                return [
-                    "success" => false,
-                    "message" =>
-                        "Failed to upload profile photo."
-                ];
-            }
-
-            $profilePhoto = $fileName;
-        }
+    $profilePhoto =
+        $uploadResult["filename"];
+}
 
 
         // =========================
@@ -152,6 +125,15 @@ class EmployeeController
         if (!$statusValidation["success"]) {
             return $statusValidation;
         }
+        $duplicateCheck =
+    $this->employeeService->checkDuplicate(
+        $employee_id,
+        $email
+    );
+
+if (!$duplicateCheck["success"]) {
+    return $duplicateCheck;
+}
 
 
         // =========================
@@ -551,70 +533,23 @@ public function countFilteredEmployees(
         // =========================
 
         if (
-            isset($_FILES["profile_photo"]) &&
-            $_FILES["profile_photo"]["error"] !==
-            UPLOAD_ERR_NO_FILE
-        ) {
+    isset($_FILES["profile_photo"]) &&
+    $_FILES["profile_photo"]["error"] !==
+    UPLOAD_ERR_NO_FILE
+) {
 
-            $profile_photo =
-                $_FILES["profile_photo"];
+    $uploadResult =
+        $this->fileUpload->upload(
+            $_FILES["profile_photo"]
+        );
 
+    if (!$uploadResult["success"]) {
+        return $uploadResult;
+    }
 
-            // Validate profile photo
-            $photoValidation =
-                $this->employeeService
-                    ->validateProfilePhoto(
-                        $profile_photo
-                    );
-
-            if (!$photoValidation["success"]) {
-                return $photoValidation;
-            }
-
-
-            // Get validated extension
-            $extension =
-                $photoValidation["extension"];
-
-
-            // Upload directory
-            $uploadDir =
-                __DIR__ .
-                "/../public/uploads/employees/";
-
-
-            // Generate unique filename
-            $fileName =
-                uniqid("emp_", true) .
-                "." .
-                $extension;
-
-
-            // Full upload path
-            $uploadPath =
-                $uploadDir .
-                $fileName;
-
-
-            // Move uploaded file
-            if (
-                !move_uploaded_file(
-                    $profile_photo["tmp_name"],
-                    $uploadPath
-                )
-            ) {
-                return [
-                    "success" => false,
-                    "message" =>
-                        "Failed to upload profile photo."
-                ];
-            }
-
-
-            // Add new photo filename
-            $data["profile_photo"] =
-                $fileName;
-        }
+    $data["profile_photo"] =
+        $uploadResult["filename"];
+}
 
 
         // =========================

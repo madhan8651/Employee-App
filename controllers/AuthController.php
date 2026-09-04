@@ -26,25 +26,39 @@ class AuthController
     }
 
     public function login($login, $password)
-    {
-        $user = $this->authenticationService->authenticate(
-            $login,
-            $password
-        );
+{
+    $user = $this->authenticationService->authenticate(
+        $login,
+        $password
+    );
 
-        if (!is_array($user)) {
-            return $user;
-        }
+    if (!is_array($user)) {
+        return $user;
+    }
 
+    if (session_status() === PHP_SESSION_NONE) {
         session_start();
+    }
+
+    if ($user["role"] === "Admin") {
 
         $_SESSION["user_id"] = $user["user_id"];
         $_SESSION["name"] = $user["name"];
         $_SESSION["role"] = $user["role"];
 
-        header("Location: ../views/auth/admin/dashboard.php");
+        header(
+            "Location: /Employee_App/views/auth/admin/dashboard.php"
+        );
         exit;
     }
+
+    if ($user["role"] === "Employee") {
+
+        return "You are not authorized to access the Admin Dashboard.";
+    }
+
+    return "Invalid user role.";
+}
 
     public function changePassword(
         $currentPassword,
@@ -52,8 +66,8 @@ class AuthController
         $confirmPassword
     ) {
         if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+            session_start();
+        }
 
         if (!isset($_SESSION["user_id"])) {
             return "User is not logged in";

@@ -27,15 +27,12 @@ $csrfToken = CsrfMiddleware::generateToken();
         href="https://fonts.gstatic.com"
         crossorigin
     >
-    <link
-    rel="stylesheet"
-    href="../../public/css/style.css"
->
+
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
     >
-
+<link rel="stylesheet" href="/Employee_App/public/css/style.css">
 </head>
 
 <body>

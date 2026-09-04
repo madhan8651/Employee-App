@@ -12,7 +12,7 @@ $controller = new EmployeeController();
 // PAGINATION
 // =========================
 
-$limit = 5;
+$limit = 4;
 
 $page = isset($_GET["page"])
     ? (int) $_GET["page"]

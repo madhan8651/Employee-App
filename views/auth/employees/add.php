@@ -264,7 +264,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             </label>
 
                             <input
-                                type="email"
+                                type="text"
                                 id="email"
                                 name="email"
                                 class="form-control"
