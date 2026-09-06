@@ -45,8 +45,7 @@ $message = $message ?? "";
 
             <?php endif; ?>
 
-            <form method="POST" action="/Employee_App/public/login.php">
-
+<form method="POST" action="/Employee_App/routes/auth.php/login">
                 <div class="form-group">
 
                     <label for="login">Email or Username</label>

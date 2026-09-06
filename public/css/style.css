@@ -1599,3 +1599,118 @@ textarea.form-control {
     }
 
 }
+/* =========================
+   COMMON APP BUTTON
+========================= */
+
+.app-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 58px;
+    padding: 0.9rem 1.5rem;
+
+    border: none;
+    border-radius: 16px;
+
+    background: linear-gradient(
+        135deg,
+        #20235f 0%,
+        #4f46e5 100%
+    );
+
+    color: #ffffff !important;
+
+    font-size: 1rem;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 22px
+        rgba(79, 70, 229, 0.20);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.app-btn:hover {
+    color: #ffffff !important;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 28px
+        rgba(79, 70, 229, 0.28);
+}
+
+.app-btn-sm {
+    min-height: 42px;
+    padding: 0.65rem 1rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+}
+.dashboard-shell {
+    width: min(100%, 1000px);
+    margin: 0 auto;
+}
+
+.dashboard-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    box-shadow: 0 18px 40px rgba(17, 24, 39, 0.08);
+    padding: 2.5rem;
+}
+
+.page-header {
+    position: relative;
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.header-content {
+    text-align: center;
+}
+
+.add-user-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.btn-add {
+    border: none;
+    border-radius: 12px;
+    padding: 0.8rem 1.1rem;
+    background: linear-gradient(
+        135deg,
+        #111827 0%,
+        #4f46e5 100%
+    );
+    color: #ffffff !important;
+    font-size: 0.9rem;
+    font-weight: 700;
+    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.15);
+}
+
+.btn-add:hover {
+    color: #ffffff !important;
+}
+
+@media (max-width: 575.98px) {
+
+    .dashboard-card {
+        padding: 1.2rem;
+    }
+
+    .add-user-button {
+        position: static;
+        display: inline-block;
+        margin-top: 1rem;
+    }
+}

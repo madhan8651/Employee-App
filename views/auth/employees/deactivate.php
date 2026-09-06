@@ -1,20 +1,693 @@
 <?php
 
 require_once __DIR__ . "/../../../middleware/AuthMiddleware.php";
-require_once __DIR__ . "/../../../controllers/EmployeeController.php";
 
 AuthMiddleware::check();
 
-if (!isset($_GET["employee_id"])) {
-    header("Location: index.php");
-    exit;
-}
+$employeeId = $_GET["employee_id"] ?? "";
 
-$employeeId = $_GET["employee_id"];
+?>
 
-$controller = new EmployeeController();
+<!DOCTYPE html>
+<html lang="en">
 
-$controller->deactivateEmployee($employeeId);
+<head>
 
-header("Location: index.php");
-exit;
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Deactivate Employee - Employee Management System
+    </title>
+
+
+    <!-- Bootstrap -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+
+    <!-- Google Font -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- Main CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../../public/css/style.css"
+    >
+
+
+    <style>
+
+        /* =========================
+           DEACTIVATE PAGE
+        ========================= */
+
+        .deactivate-page {
+            min-height: 100vh;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 40px 20px;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    rgba(79, 70, 229, 0.10),
+                    transparent 35%
+                ),
+                linear-gradient(
+                    135deg,
+                    #f8faff 0%,
+                    #eef2ff 100%
+                );
+        }
+
+
+        .deactivate-card {
+            width: min(100%, 720px);
+
+            background: #ffffff;
+
+            border-radius: 28px;
+
+            padding: 42px;
+
+            box-shadow:
+                0 25px 60px
+                rgba(15, 23, 42, 0.10),
+                0 8px 24px
+                rgba(15, 23, 42, 0.06);
+
+            border: 1px solid
+                rgba(148, 163, 184, 0.18);
+        }
+
+
+        /* =========================
+           BRAND
+        ========================= */
+
+        .deactivate-brand {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+
+        .deactivate-brand-mark {
+            width: 64px;
+            height: 64px;
+
+            margin: 0 auto 14px;
+
+            border-radius: 18px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #161b3f,
+                    #5046e5
+                );
+
+            color: #ffffff;
+
+            font-size: 30px;
+            font-weight: 800;
+
+            box-shadow:
+                0 12px 25px
+                rgba(79, 70, 229, 0.22);
+        }
+
+
+        .deactivate-brand-title {
+            margin: 0;
+
+            color: #0f172a;
+
+            font-size: 28px;
+
+            font-weight: 800;
+
+            letter-spacing: -0.8px;
+        }
+
+
+        /* =========================
+           WARNING ICON
+        ========================= */
+
+        .warning-icon {
+            width: 76px;
+            height: 76px;
+
+            margin: 0 auto 22px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background: #fff1f2;
+
+            color: #e11d48;
+
+            font-size: 38px;
+            font-weight: 800;
+
+            border: 8px solid #fff7f8;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .deactivate-header {
+            text-align: center;
+        }
+
+
+        .deactivate-eyebrow {
+            display: inline-flex;
+
+            align-items: center;
+
+            padding: 8px 15px;
+
+            border-radius: 999px;
+
+            background: #eef2ff;
+
+            color: #4f46e5;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 16px;
+        }
+
+
+        .deactivate-header h1 {
+            margin: 0;
+
+            color: #0f172a;
+
+            font-size: 36px;
+
+            line-height: 1.15;
+
+            font-weight: 800;
+
+            letter-spacing: -1.2px;
+        }
+
+
+        .deactivate-header p {
+            margin: 12px 0 0;
+
+            color: #64748b;
+
+            font-size: 16px;
+        }
+
+
+        /* =========================
+           EMPLOYEE INFO
+        ========================= */
+
+        .employee-info-box {
+            margin-top: 32px;
+
+            padding: 22px;
+
+            border-radius: 18px;
+
+            background: #f8fafc;
+
+            border: 1px solid #e2e8f0;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 18px;
+        }
+
+
+        .employee-info-icon {
+            width: 52px;
+            height: 52px;
+
+            flex-shrink: 0;
+
+            border-radius: 15px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background: #eef2ff;
+
+            color: #4f46e5;
+
+            font-size: 24px;
+
+            font-weight: 700;
+        }
+
+
+        .employee-info-label {
+            margin-bottom: 4px;
+
+            color: #64748b;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        .employee-info-id {
+            color: #0f172a;
+
+            font-size: 22px;
+
+            font-weight: 800;
+
+            letter-spacing: 0.2px;
+        }
+
+
+        .employee-info-text {
+            margin-top: 4px;
+
+            color: #64748b;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           WARNING BOX
+        ========================= */
+
+        .warning-box {
+            margin-top: 20px;
+
+            padding: 18px 20px;
+
+            border-radius: 16px;
+
+            background: #fff7ed;
+
+            border: 1px solid #fed7aa;
+        }
+
+
+        .warning-box-title {
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            margin-bottom: 7px;
+
+            color: #c2410c;
+
+            font-size: 14px;
+
+            font-weight: 800;
+        }
+
+
+        .warning-box p {
+            margin: 0;
+
+            color: #7c2d12;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        #message {
+            margin-top: 24px;
+        }
+
+
+        #message .alert {
+            margin-bottom: 0;
+
+            border-radius: 14px;
+
+            font-weight: 600;
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .deactivate-actions {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 14px;
+
+            margin-top: 30px;
+        }
+
+
+        .deactivate-actions .btn {
+            min-height: 54px;
+
+            border-radius: 14px;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        .deactivate-actions .btn:hover {
+            transform: translateY(-1px);
+        }
+
+
+        .btn-deactivate {
+            border: none;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #dc2626,
+                    #e11d48
+                );
+
+            color: #ffffff;
+
+            box-shadow:
+                0 12px 24px
+                rgba(225, 29, 72, 0.22);
+        }
+
+
+        .btn-deactivate:hover,
+        .btn-deactivate:focus {
+            color: #ffffff;
+
+            box-shadow:
+                0 16px 28px
+                rgba(225, 29, 72, 0.28);
+        }
+
+
+        .btn-cancel-deactivate {
+            background: #ffffff;
+
+            color: #0f172a;
+
+            border: 1px solid #dbe2ea;
+        }
+
+
+        .btn-cancel-deactivate:hover,
+        .btn-cancel-deactivate:focus {
+            color: #0f172a;
+
+            background: #f8fafc;
+        }
+
+
+        /* =========================
+           FOOTER NOTE
+        ========================= */
+
+        .confirmation-note {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 8px;
+
+            margin-top: 20px;
+
+            color: #94a3b8;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 640px) {
+
+            .deactivate-page {
+                padding: 20px 14px;
+            }
+
+
+            .deactivate-card {
+                padding: 28px 20px;
+
+                border-radius: 22px;
+            }
+
+
+            .deactivate-header h1 {
+                font-size: 30px;
+            }
+
+
+            .employee-info-box {
+                padding: 18px;
+            }
+
+
+            .deactivate-actions {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="deactivate-page">
+
+    <div class="deactivate-card">
+
+
+        <!-- Brand -->
+
+        <div class="deactivate-brand">
+
+            <div class="deactivate-brand-mark">
+                E
+            </div>
+
+            <h2 class="deactivate-brand-title">
+                Employee App
+            </h2>
+
+        </div>
+
+
+        <!-- Warning Icon -->
+
+        <div class="warning-icon">
+            !
+        </div>
+
+
+        <!-- Header -->
+
+        <div class="deactivate-header">
+
+            <span class="deactivate-eyebrow">
+                Employee Management
+            </span>
+
+            <h1>
+                Deactivate Employee
+            </h1>
+
+            <p>
+                Please review the employee before confirming this action.
+            </p>
+
+        </div>
+
+
+        <!-- Message -->
+
+        <div id="message"></div>
+
+
+        <!-- Employee Information -->
+
+        <div class="employee-info-box">
+
+            <div class="employee-info-icon">
+                👤
+            </div>
+
+            <div>
+
+                <div class="employee-info-label">
+                    Employee ID
+                </div>
+
+                <div class="employee-info-id">
+                    <?= htmlspecialchars($employeeId) ?>
+                </div>
+
+                <div class="employee-info-text">
+                    This employee will be marked as inactive.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Warning -->
+
+        <div class="warning-box">
+
+            <div class="warning-box-title">
+                ⚠ Confirmation required
+            </div>
+
+            <p>
+                Deactivating this employee will change their status
+                to inactive while keeping their existing records
+                in the system.
+            </p>
+
+        </div>
+
+
+        <!-- Actions -->
+
+        <div class="deactivate-actions">
+
+            <!-- Hidden Employee ID -->
+
+            <input
+                type="hidden"
+                id="employeeId"
+                value="<?= htmlspecialchars($employeeId) ?>"
+            >
+
+
+            <!-- Cancel -->
+
+            <a
+                href="index.php"
+                class="btn btn-cancel-deactivate d-flex align-items-center justify-content-center"
+            >
+                ←&nbsp; Cancel
+            </a>
+
+
+            <!-- Deactivate -->
+
+            <button
+                type="button"
+                id="deactivateButton"
+                class="btn btn-deactivate"
+            >
+                Deactivate Employee
+            </button>
+
+        </div>
+
+
+        <!-- Confirmation Note -->
+
+        <div class="confirmation-note">
+
+            <span>
+                🔒
+            </span>
+
+            <span>
+                This action requires confirmation
+            </span>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- Bootstrap JS -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+<!-- Deactivate JS -->
+
+<script src="../../../public/js/deactivate.js"></script>
+
+</body>
+
+</html>

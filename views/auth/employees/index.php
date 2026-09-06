@@ -1,19 +1,13 @@
 <?php
 
 require_once __DIR__ . "/../../../middleware/AuthMiddleware.php";
-require_once __DIR__ . "/../../../controllers/EmployeeController.php";
 
 AuthMiddleware::check();
 
-$controller = new EmployeeController();
-
-
-// =========================
-// PAGINATION
-// =========================
-
-$limit = 4;
-
+$search = trim($_GET["search"] ?? "");
+$department_id = $_GET["department_id"] ?? "";
+$status = $_GET["status"] ?? "";
+$sort = $_GET["sort"] ?? "";
 $page = isset($_GET["page"])
     ? (int) $_GET["page"]
     : 1;
@@ -21,61 +15,6 @@ $page = isset($_GET["page"])
 if ($page < 1) {
     $page = 1;
 }
-
-
-// =========================
-// FILTERS
-// =========================
-
-$search = trim($_GET["search"] ?? "");
-$department_id = $_GET["department_id"] ?? "";
-$status = $_GET["status"] ?? "";
-$sort = $_GET["sort"] ?? "";
-
-
-// =========================
-// TOTAL EMPLOYEES
-// =========================
-
-$totalEmployees = $controller->countFilteredEmployees(
-    $search,
-    $department_id,
-    $status
-);
-
-
-// =========================
-// TOTAL PAGES
-// =========================
-
-$totalPages = (int) ceil(
-    $totalEmployees / $limit
-);
-
-if ($totalPages > 0 && $page > $totalPages) {
-    $page = $totalPages;
-}
-
-
-// =========================
-// OFFSET
-// =========================
-
-$offset = ($page - 1) * $limit;
-
-
-// =========================
-// GET EMPLOYEES
-// =========================
-
-$employees = $controller->getFilteredEmployees(
-    $search,
-    $department_id,
-    $status,
-    $sort,
-    $limit,
-    $offset
-);
 
 ?>
 
@@ -106,27 +45,26 @@ $employees = $controller->getFilteredEmployees(
 
     <!-- Google Font -->
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
-<link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
->
 
-<!-- Shared CSS -->
+    <!-- Shared CSS -->
 
-<link
-    rel="stylesheet"
-    href="../../../public/css/style.css"
->
-
-    
+    <link
+        rel="stylesheet"
+        href="../../../public/css/style.css"
+    >
 
 </head>
 
 
 <body>
+
 
 <div class="employee-shell">
 
@@ -195,8 +133,7 @@ $employees = $controller->getFilteredEmployees(
             <div class="col-lg-5 col-md-12">
 
                 <form
-                    method="GET"
-                    action="index.php"
+                    id="searchForm"
                 >
 
                     <div class="search-box">
@@ -208,6 +145,7 @@ $employees = $controller->getFilteredEmployees(
                         <input
                             type="text"
                             name="search"
+                            id="search"
                             class="form-control"
                             placeholder="Search employees..."
                             value="<?= htmlspecialchars($search) ?>"
@@ -232,66 +170,52 @@ $employees = $controller->getFilteredEmployees(
 
             <div class="col-lg-2 col-md-4">
 
-                <form
-                    method="GET"
-                    action="index.php"
+                <select
+                    id="department_id"
+                    name="department_id"
+                    class="form-select"
                 >
 
-                    <input
-                        type="hidden"
-                        name="search"
-                        value="<?= htmlspecialchars($search) ?>"
-                    ?>
+                    <option value="">
+                        All Departments
+                    </option>
 
-
-                    <select
-                        name="department_id"
-                        class="form-select"
-                        onchange="updateFilterSearch(this.form); this.form.submit()"
+                    <option
+                        value="1"
+                        <?= $department_id == "1" ? "selected" : "" ?>
                     >
+                        HR
+                    </option>
 
-                        <option value="">
-                            All Departments
-                        </option>
+                    <option
+                        value="2"
+                        <?= $department_id == "2" ? "selected" : "" ?>
+                    >
+                        IT
+                    </option>
 
-                        <option
-                            value="1"
-                            <?= $department_id == "1" ? "selected" : "" ?>
-                        >
-                            HR
-                        </option>
+                    <option
+                        value="3"
+                        <?= $department_id == "3" ? "selected" : "" ?>
+                    >
+                        Finance
+                    </option>
 
-                        <option
-                            value="2"
-                            <?= $department_id == "2" ? "selected" : "" ?>
-                        >
-                            IT
-                        </option>
+                    <option
+                        value="4"
+                        <?= $department_id == "4" ? "selected" : "" ?>
+                    >
+                        Sales
+                    </option>
 
-                        <option
-                            value="3"
-                            <?= $department_id == "3" ? "selected" : "" ?>
-                        >
-                            Finance
-                        </option>
+                    <option
+                        value="5"
+                        <?= $department_id == "5" ? "selected" : "" ?>
+                    >
+                        Marketing
+                    </option>
 
-                        <option
-                            value="4"
-                            <?= $department_id == "4" ? "selected" : "" ?>
-                        >
-                            Sales
-                        </option>
-
-                        <option
-                            value="5"
-                            <?= $department_id == "5" ? "selected" : "" ?>
-                        >
-                            Marketing
-                        </option>
-
-                    </select>
-
-                </form>
+                </select>
 
             </div>
 
@@ -300,57 +224,31 @@ $employees = $controller->getFilteredEmployees(
 
             <div class="col-lg-2 col-md-4">
 
-                <form
-                    method="GET"
-                    action="index.php"
+                <select
+                    id="status"
+                    name="status"
+                    class="form-select"
                 >
 
-                    <input
-                        type="hidden"
-                        name="search"
-                        id="statusSearch"
-                        value="<?= htmlspecialchars($search) ?>"
-                    ?>
+                    <option value="">
+                        All Status
+                    </option>
 
-
-                    <?php if ($department_id !== ""): ?>
-
-                        <input
-                            type="hidden"
-                            name="department_id"
-                            value="<?= htmlspecialchars($department_id) ?>"
-                        >
-
-                    <?php endif; ?>
-
-
-                    <select
-                        name="status"
-                        class="form-select"
-                        onchange="updateFilterSearch(this.form); this.form.submit()"
+                    <option
+                        value="Active"
+                        <?= $status === "Active" ? "selected" : "" ?>
                     >
+                        Active
+                    </option>
 
-                        <option value="">
-                            All Status
-                        </option>
+                    <option
+                        value="Inactive"
+                        <?= $status === "Inactive" ? "selected" : "" ?>
+                    >
+                        Inactive
+                    </option>
 
-                        <option
-                            value="Active"
-                            <?= $status === "Active" ? "selected" : "" ?>
-                        >
-                            Active
-                        </option>
-
-                        <option
-                            value="Inactive"
-                            <?= $status === "Inactive" ? "selected" : "" ?>
-                        >
-                            Inactive
-                        </option>
-
-                    </select>
-
-                </form>
+                </select>
 
             </div>
 
@@ -359,74 +257,38 @@ $employees = $controller->getFilteredEmployees(
 
             <div class="col-lg-2 col-md-4">
 
-                <form
-                    method="GET"
-                    action="index.php"
+                <select
+                    id="sort"
+                    name="sort"
+                    class="form-select"
                 >
 
-                    <input
-                        type="hidden"
-                        name="search"
-                        value="<?= htmlspecialchars($search) ?>"
-                    ?>
+                    <option value="">
+                        Sort By
+                    </option>
 
-
-                    <?php if ($department_id !== ""): ?>
-
-                        <input
-                            type="hidden"
-                            name="department_id"
-                            value="<?= htmlspecialchars($department_id) ?>"
-                        >
-
-                    <?php endif; ?>
-
-
-                    <?php if ($status !== ""): ?>
-
-                        <input
-                            type="hidden"
-                            name="status"
-                            value="<?= htmlspecialchars($status) ?>"
-                        >
-
-                    <?php endif; ?>
-
-
-                    <select
-                        name="sort"
-                        class="form-select"
-                        onchange="updateFilterSearch(this.form); this.form.submit()"
+                    <option
+                        value="employee_id"
+                        <?= $sort === "employee_id" ? "selected" : "" ?>
                     >
+                        Employee ID
+                    </option>
 
-                        <option value="">
-                            Sort By
-                        </option>
+                    <option
+                        value="name"
+                        <?= $sort === "name" ? "selected" : "" ?>
+                    >
+                        Name
+                    </option>
 
-                        <option
-                            value="employee_id"
-                            <?= $sort === "employee_id" ? "selected" : "" ?>
-                        >
-                            Employee ID
-                        </option>
+                    <option
+                        value="salary"
+                        <?= $sort === "salary" ? "selected" : "" ?>
+                    >
+                        Salary
+                    </option>
 
-                        <option
-                            value="name"
-                            <?= $sort === "name" ? "selected" : "" ?>
-                        >
-                            Name
-                        </option>
-
-                        <option
-                            value="salary"
-                            <?= $sort === "salary" ? "selected" : "" ?>
-                        >
-                            Salary
-                        </option>
-
-                    </select>
-
-                </form>
+                </select>
 
             </div>
 
@@ -438,7 +300,7 @@ $employees = $controller->getFilteredEmployees(
                 <button
                     type="button"
                     class="btn btn-light border btn-reset w-100"
-                    onclick="window.location.href='index.php';"
+                    id="resetButton"
                 >
                     Reset
                 </button>
@@ -446,6 +308,11 @@ $employees = $controller->getFilteredEmployees(
             </div>
 
         </div>
+
+
+        <!-- API Message -->
+
+        <div id="message"></div>
 
 
         <!-- Employee Table -->
@@ -497,9 +364,7 @@ $employees = $controller->getFilteredEmployees(
                     </thead>
 
 
-                    <tbody>
-
-                    <?php if (empty($employees)): ?>
+                    <tbody id="employeeTableBody">
 
                         <tr>
 
@@ -507,209 +372,10 @@ $employees = $controller->getFilteredEmployees(
                                 colspan="8"
                                 class="empty-state"
                             >
-                                No employees found.
+                                Loading employees...
                             </td>
 
                         </tr>
-
-                    <?php else: ?>
-
-
-                        <?php foreach ($employees as $employee): ?>
-
-                            <tr>
-
-
-                                <!-- Employee -->
-
-                                <td>
-
-                                    <div class="employee-info">
-
-                                        <div class="employee-avatar">
-
-                                            <?= strtoupper(
-                                                substr(
-                                                    $employee["first_name"],
-                                                    0,
-                                                    1
-                                                )
-                                            ) ?>
-
-                                        </div>
-
-
-                                        <div>
-
-                                            <div class="employee-name">
-
-                                                <?= htmlspecialchars(
-                                                    $employee["first_name"]
-                                                    . " "
-                                                    . $employee["last_name"]
-                                                ) ?>
-
-                                            </div>
-
-
-                                            <div class="employee-id">
-
-                                                <?= htmlspecialchars(
-                                                    $employee["employee_id"]
-                                                ) ?>
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                </td>
-
-
-                                <!-- Department -->
-
-                                <td>
-
-                                    <span class="department-name">
-
-                                        <?= htmlspecialchars(
-                                            $employee["department_name"]
-                                        ) ?>
-
-                                    </span>
-
-                                </td>
-
-
-                                <!-- Designation -->
-
-                                <td>
-
-                                    <span class="designation">
-
-                                        <?= htmlspecialchars(
-                                            $employee["designation"]
-                                        ) ?>
-
-                                    </span>
-
-                                </td>
-
-
-                                <!-- Email -->
-
-                                <td>
-
-                                    <span class="email">
-
-                                        <?= htmlspecialchars(
-                                            $employee["email"]
-                                        ) ?>
-
-                                    </span>
-
-                                </td>
-
-
-                                <!-- Phone -->
-
-                                <td>
-
-                                    <span class="phone">
-
-                                        <?= htmlspecialchars(
-                                            $employee["phone"]
-                                        ) ?>
-
-                                    </span>
-
-                                </td>
-
-
-                                <!-- Salary -->
-
-                                <td>
-
-                                    <span class="salary">
-
-                                        ₹<?= htmlspecialchars(
-                                            $employee["salary"]
-                                        ) ?>
-
-                                    </span>
-
-                                </td>
-
-
-                                <!-- Status -->
-
-                                <td>
-
-                                    <?php if (
-                                        strtolower(
-                                            $employee["status"]
-                                        ) === "active"
-                                    ): ?>
-
-                                        <span
-                                            class="badge bg-success-subtle text-success status-badge"
-                                        >
-                                            Active
-                                        </span>
-
-                                    <?php else: ?>
-
-                                        <span
-                                            class="badge bg-secondary-subtle text-secondary status-badge"
-                                        >
-                                            Inactive
-                                        </span>
-
-                                    <?php endif; ?>
-
-                                </td>
-
-
-                                <!-- Actions -->
-
-                                <td class="text-end">
-
-                                    <a
-                                        href="view.php?employee_id=<?= urlencode($employee["employee_id"]) ?>"
-                                        class="action-btn me-1"
-                                        title="View Employee"
-                                    >
-                                        👁
-                                    </a>
-
-
-                                    <a
-                                        href="edit.php?employee_id=<?= urlencode($employee["employee_id"]) ?>"
-                                        class="action-btn"
-                                        title="Edit Employee"
-                                    >
-                                        ✎
-                                    </a>
-
-
-                                    <a
-                                        href="deactivate.php?employee_id=<?= urlencode($employee["employee_id"]) ?>"
-                                        class="action-btn"
-                                        title="Deactivate Employee"
-                                        onclick="return confirm('Are you sure you want to deactivate this employee?');"
-                                    >
-                                        ⏸
-                                    </a>
-
-                                </td>
-
-                            </tr>
-
-                        <?php endforeach; ?>
-
-
-                    <?php endif; ?>
 
                     </tbody>
 
@@ -725,108 +391,28 @@ $employees = $controller->getFilteredEmployees(
         <div class="table-footer">
 
 
-            <div class="employee-count">
-
+            <div
+                class="employee-count"
+                id="employeeCount"
+            >
                 Showing
-
-                <strong>
-                    <?= count($employees) ?>
-                </strong>
-
+                <strong>0</strong>
                 employee(s)
-
             </div>
 
 
             <!-- Pagination -->
 
-            <?php if ($totalPages > 0): ?>
+            <nav>
 
-                <nav>
+                <ul
+                    class="pagination pagination-sm"
+                    id="pagination"
+                >
+                </ul>
 
-                    <ul class="pagination pagination-sm">
+            </nav>
 
-
-                        <!-- Previous -->
-
-                        <li
-                            class="page-item <?= $page <= 1 ? 'disabled' : '' ?>"
-                        >
-
-                            <?php if ($page > 1): ?>
-
-                                <a
-                                    class="page-link"
-                                    href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>&department_id=<?= urlencode($department_id) ?>&status=<?= urlencode($status) ?>&sort=<?= urlencode($sort) ?>"
-                                >
-                                    Previous
-                                </a>
-
-                            <?php else: ?>
-
-                                <span class="page-link">
-                                    Previous
-                                </span>
-
-                            <?php endif; ?>
-
-                        </li>
-
-
-                        <!-- Page Numbers -->
-
-                        <?php for (
-                            $i = 1;
-                            $i <= $totalPages;
-                            $i++
-                        ): ?>
-
-                            <li
-                                class="page-item <?= $i == $page ? 'active' : '' ?>"
-                            >
-
-                                <a
-                                    class="page-link"
-                                    href="?page=<?= $i ?>&search=<?= urlencode($search) ?>&department_id=<?= urlencode($department_id) ?>&status=<?= urlencode($status) ?>&sort=<?= urlencode($sort) ?>"
-                                >
-                                    <?= $i ?>
-                                </a>
-
-                            </li>
-
-                        <?php endfor; ?>
-
-
-                        <!-- Next -->
-
-                        <li
-                            class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>"
-                        >
-
-                            <?php if ($page < $totalPages): ?>
-
-                                <a
-                                    class="page-link"
-                                    href="?page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>&department_id=<?= urlencode($department_id) ?>&status=<?= urlencode($status) ?>&sort=<?= urlencode($sort) ?>"
-                                >
-                                    Next
-                                </a>
-
-                            <?php else: ?>
-
-                                <span class="page-link">
-                                    Next
-                                </span>
-
-                            <?php endif; ?>
-
-                        </li>
-
-                    </ul>
-
-                </nav>
-
-            <?php endif; ?>
 
         </div>
 
@@ -835,11 +421,827 @@ $employees = $controller->getFilteredEmployees(
 </div>
 
 
+<!-- Bootstrap JS -->
+
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
 </script>
 
-<script src="../../../public/js/script.js"></script>
+
+<script>
+
+/*
+|--------------------------------------------------------------------------
+| API
+|--------------------------------------------------------------------------
+*/
+
+const API_URL =
+    "/Employee_App/routes/api.php/employees";
+
+
+/*
+|--------------------------------------------------------------------------
+| Current Page
+|--------------------------------------------------------------------------
+*/
+
+let currentPage =
+    <?= $page ?>;
+
+
+/*
+|--------------------------------------------------------------------------
+| Elements
+|--------------------------------------------------------------------------
+*/
+
+const employeeTableBody =
+    document.getElementById(
+        "employeeTableBody"
+    );
+
+const employeeCount =
+    document.getElementById(
+        "employeeCount"
+    );
+
+const pagination =
+    document.getElementById(
+        "pagination"
+    );
+
+const messageBox =
+    document.getElementById(
+        "message"
+    );
+
+const searchInput =
+    document.getElementById(
+        "search"
+    );
+
+const departmentSelect =
+    document.getElementById(
+        "department_id"
+    );
+
+const statusSelect =
+    document.getElementById(
+        "status"
+    );
+
+const sortSelect =
+    document.getElementById(
+        "sort"
+    );
+
+
+/*
+|--------------------------------------------------------------------------
+| SHOW MESSAGE
+|--------------------------------------------------------------------------
+*/
+
+function showMessage(message, success)
+{
+    messageBox.innerHTML =
+        `
+        <div class="alert ${success ? "alert-success" : "alert-danger"}">
+            ${message}
+        </div>
+        `;
+
+    setTimeout(
+        function ()
+        {
+            messageBox.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+        },
+        100
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| LOAD EMPLOYEES
+|--------------------------------------------------------------------------
+*/
+
+async function loadEmployees()
+{
+
+    employeeTableBody.innerHTML =
+        `
+        <tr>
+            <td
+                colspan="8"
+                class="empty-state"
+            >
+                Loading employees...
+            </td>
+        </tr>
+        `;
+
+
+    const params =
+        new URLSearchParams();
+
+
+    const search =
+        searchInput.value.trim();
+
+    const departmentId =
+        departmentSelect.value;
+
+    const status =
+        statusSelect.value;
+
+    const sort =
+        sortSelect.value;
+
+
+    if (search !== "") {
+        params.append(
+            "search",
+            search
+        );
+    }
+
+
+    if (departmentId !== "") {
+        params.append(
+            "department_id",
+            departmentId
+        );
+    }
+
+
+    if (status !== "") {
+        params.append(
+            "status",
+            status
+        );
+    }
+
+
+    if (sort !== "") {
+        params.append(
+            "sort",
+            sort
+        );
+    }
+
+
+    params.append(
+        "page",
+        currentPage
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL +
+                "?" +
+                params.toString(),
+                {
+                    method: "GET",
+                    credentials: "same-origin"
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.message ||
+                "Failed to load employees."
+            );
+        }
+
+
+        const employees =
+            result.data || [];
+
+        const pageData =
+            result.pagination || {};
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | DISPLAY EMPLOYEES
+        |--------------------------------------------------------------------------
+        */
+
+        employeeTableBody.innerHTML = "";
+
+
+        if (employees.length === 0) {
+
+            employeeTableBody.innerHTML =
+                `
+                <tr>
+                    <td
+                        colspan="8"
+                        class="empty-state"
+                    >
+                        No employees found.
+                    </td>
+                </tr>
+                `;
+
+        } else {
+
+            employees.forEach(
+                function (employee)
+                {
+
+                    const row =
+                        document.createElement("tr");
+
+
+                    const firstInitial =
+                        (
+                            employee.first_name ||
+                            ""
+                        )
+                        .charAt(0)
+                        .toUpperCase();
+
+
+                    const fullName =
+                        (
+                            employee.first_name ||
+                            ""
+                        ) +
+                        " " +
+                        (
+                            employee.last_name ||
+                            ""
+                        );
+
+
+                    const status =
+                        (
+                            employee.status ||
+                            ""
+                        )
+                        .toLowerCase();
+
+
+                    const statusHtml =
+                        status === "active"
+
+                        ?
+
+                        `
+                        <span
+                            class="badge bg-success-subtle text-success status-badge"
+                        >
+                            Active
+                        </span>
+                        `
+
+                        :
+
+                        `
+                        <span
+                            class="badge bg-secondary-subtle text-secondary status-badge"
+                        >
+                            Inactive
+                        </span>
+                        `;
+
+
+                    row.innerHTML =
+                        `
+                        <td>
+
+                            <div class="employee-info">
+
+                                <div class="employee-avatar">
+                                    ${firstInitial}
+                                </div>
+
+                                <div>
+
+                                    <div class="employee-name">
+                                        ${escapeHtml(fullName)}
+                                    </div>
+
+                                    <div class="employee-id">
+                                        ${escapeHtml(employee.employee_id || "")}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="department-name">
+                                ${escapeHtml(employee.department_name || "")}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="designation">
+                                ${escapeHtml(employee.designation || "")}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="email">
+                                ${escapeHtml(employee.email || "")}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="phone">
+                                ${escapeHtml(employee.phone || "")}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="salary">
+                                ₹${escapeHtml(employee.salary || "")}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            ${statusHtml}
+                        </td>
+
+
+                        <td class="text-end">
+
+                            <a
+                                href="view.php?employee_id=${encodeURIComponent(employee.employee_id)}"
+                                class="action-btn me-1"
+                                title="View Employee"
+                            >
+                                👁
+                            </a>
+
+
+                            <a
+                                href="edit.php?employee_id=${encodeURIComponent(employee.employee_id)}"
+                                class="action-btn"
+                                title="Edit Employee"
+                            >
+                                ✎
+                            </a>
+
+
+                            <a
+                                href="deactivate.php?employee_id=${encodeURIComponent(employee.employee_id)}"
+                                class="action-btn"
+                                title="Deactivate Employee"
+                                onclick="return confirm('Are you sure you want to deactivate this employee?');"
+                            >
+                                ⏸
+                            </a>
+
+                        </td>
+                        `;
+
+
+                    employeeTableBody.appendChild(
+                        row
+                    );
+                }
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | EMPLOYEE COUNT
+        |--------------------------------------------------------------------------
+        */
+
+        employeeCount.innerHTML =
+            `
+            Showing
+            <strong>
+                ${employees.length}
+            </strong>
+            employee(s)
+            `;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PAGINATION
+        |--------------------------------------------------------------------------
+        */
+
+        createPagination(
+            pageData.current_page || 1,
+            pageData.total_pages || 0
+        );
+
+
+    } catch (error) {
+
+        employeeTableBody.innerHTML =
+            `
+            <tr>
+                <td
+                    colspan="8"
+                    class="empty-state"
+                >
+                    Unable to load employees.
+                </td>
+            </tr>
+            `;
+
+
+        showMessage(
+            error.message ||
+            "Unable to connect to Employee API.",
+            false
+        );
+    }
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CREATE PAGINATION
+|--------------------------------------------------------------------------
+*/
+
+function createPagination(
+    page,
+    totalPages
+)
+{
+    pagination.innerHTML = "";
+
+
+    if (totalPages <= 0) {
+        return;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PREVIOUS
+    |--------------------------------------------------------------------------
+    */
+
+    const previous =
+        document.createElement("li");
+
+    previous.className =
+        "page-item " +
+        (
+            page <= 1
+                ? "disabled"
+                : ""
+        );
+
+
+    if (page > 1) {
+
+        previous.innerHTML =
+            `
+            <a
+                href="#"
+                class="page-link"
+            >
+                Previous
+            </a>
+            `;
+
+
+        previous.querySelector("a")
+            .addEventListener(
+                "click",
+                function (event)
+                {
+
+                    event.preventDefault();
+
+                    currentPage =
+                        page - 1;
+
+                    loadEmployees();
+                }
+            );
+
+    } else {
+
+        previous.innerHTML =
+            `
+            <span class="page-link">
+                Previous
+            </span>
+            `;
+    }
+
+
+    pagination.appendChild(
+        previous
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PAGE NUMBERS
+    |--------------------------------------------------------------------------
+    */
+
+    for (
+        let i = 1;
+        i <= totalPages;
+        i++
+    ) {
+
+        const pageItem =
+            document.createElement("li");
+
+
+        pageItem.className =
+            "page-item " +
+            (
+                i === page
+                    ? "active"
+                    : ""
+            );
+
+
+        pageItem.innerHTML =
+            `
+            <a
+                href="#"
+                class="page-link"
+            >
+                ${i}
+            </a>
+            `;
+
+
+        pageItem.querySelector("a")
+            .addEventListener(
+                "click",
+                function (event)
+                {
+
+                    event.preventDefault();
+
+                    currentPage = i;
+
+                    loadEmployees();
+                }
+            );
+
+
+        pagination.appendChild(
+            pageItem
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | NEXT
+    |--------------------------------------------------------------------------
+    */
+
+    const next =
+        document.createElement("li");
+
+
+    next.className =
+        "page-item " +
+        (
+            page >= totalPages
+                ? "disabled"
+                : ""
+        );
+
+
+    if (page < totalPages) {
+
+        next.innerHTML =
+            `
+            <a
+                href="#"
+                class="page-link"
+            >
+                Next
+            </a>
+            `;
+
+
+        next.querySelector("a")
+            .addEventListener(
+                "click",
+                function (event)
+                {
+
+                    event.preventDefault();
+
+                    currentPage =
+                        page + 1;
+
+                    loadEmployees();
+                }
+            );
+
+    } else {
+
+        next.innerHTML =
+            `
+            <span class="page-link">
+                Next
+            </span>
+            `;
+    }
+
+
+    pagination.appendChild(
+        next
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| SEARCH
+|--------------------------------------------------------------------------
+*/
+
+document.getElementById(
+    "searchForm"
+).addEventListener(
+    "submit",
+    function (event)
+    {
+
+        event.preventDefault();
+
+        currentPage = 1;
+
+        loadEmployees();
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| DEPARTMENT FILTER
+|--------------------------------------------------------------------------
+*/
+
+departmentSelect.addEventListener(
+    "change",
+    function ()
+    {
+
+        currentPage = 1;
+
+        loadEmployees();
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| STATUS FILTER
+|--------------------------------------------------------------------------
+*/
+
+statusSelect.addEventListener(
+    "change",
+    function ()
+    {
+
+        currentPage = 1;
+
+        loadEmployees();
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| SORT
+|--------------------------------------------------------------------------
+*/
+
+sortSelect.addEventListener(
+    "change",
+    function ()
+    {
+
+        currentPage = 1;
+
+        loadEmployees();
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| RESET
+|--------------------------------------------------------------------------
+*/
+
+document.getElementById(
+    "resetButton"
+).addEventListener(
+    "click",
+    function ()
+    {
+
+        searchInput.value = "";
+
+        departmentSelect.value = "";
+
+        statusSelect.value = "";
+
+        sortSelect.value = "";
+
+        currentPage = 1;
+
+        messageBox.innerHTML = "";
+
+        loadEmployees();
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| HTML ESCAPE
+|--------------------------------------------------------------------------
+*/
+
+function escapeHtml(value)
+{
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| INITIAL LOAD
+|--------------------------------------------------------------------------
+*/
+
+loadEmployees();
+
+</script>
+
 
 </body>
 

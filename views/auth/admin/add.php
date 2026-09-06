@@ -1,38 +1,22 @@
 <?php
 
-require_once __DIR__ . "/../../../controllers/UserController.php";
 require_once __DIR__ . "/../../../middleware/CsrfMiddleware.php";
-$message = "";
+
 $csrfToken = CsrfMiddleware::generateToken();
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    if (!CsrfMiddleware::validateToken($_POST["csrf_token"] ?? "")) {
-
-        $message = "Invalid CSRF token.";
-
-    } else {
-
-        $controller = new UserController();
-
-        $result = $controller->createUser(
-            $_POST["name"] ?? "",
-            $_POST["email"] ?? "",
-            $_POST["username"] ?? "",
-            $_POST["password"] ?? "",
-            $_POST["role"] ?? "",
-            $_POST["status"] ?? ""
-        );
-
-        $message = $result["message"];
-    }
-}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Add User - Employee Management System</title>
 
@@ -42,11 +26,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     >
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
+
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
     >
-    <link rel="stylesheet" href="../../../public/css/style.css">
+
+    <link
+        rel="stylesheet"
+        href="../../../public/css/style.css"
+    >
+
 </head>
 
 <body>
@@ -82,19 +72,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </p>
 
         </div>
-        <?php if ($message !== ""): ?>
 
-    <div class="alert alert-<?= $result["success"] ? "success" : "danger" ?>">
-        <?= htmlspecialchars($message) ?>
-    </div>
+        <!-- API response message -->
+        <div
+            id="message"
+            class="mb-3"
+        ></div>
 
-<?php endif; ?>
-        <form method="POST">
+        <form
+            id="userForm"
+            enctype="multipart/form-data"
+        >
+
             <input
-    type="hidden"
-    name="csrf_token"
-    value="<?= htmlspecialchars($csrfToken) ?>"
->
+                type="hidden"
+                name="csrf_token"
+                value="<?= htmlspecialchars($csrfToken) ?>"
+            >
+
             <div class="row">
 
                 <div class="col-md-6">
@@ -111,6 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             name="name"
                             class="form-control"
                             placeholder="Enter name"
+                            required
                         >
 
                     </div>
@@ -131,6 +127,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             name="email"
                             class="form-control"
                             placeholder="Enter email"
+                            required
                         >
 
                     </div>
@@ -155,6 +152,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             name="username"
                             class="form-control"
                             placeholder="Enter username"
+                            required
                         >
 
                     </div>
@@ -175,6 +173,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             name="password"
                             class="form-control"
                             placeholder="Enter password"
+                            required
                         >
 
                     </div>
@@ -197,10 +196,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             id="role"
                             name="role"
                             class="form-select"
+                            required
                         >
-                            <option value="">Select role</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Employee">Employee</option>
+
+                            <option value="">
+                                Select role
+                            </option>
+
+                            <option value="Admin">
+                                Admin
+                            </option>
+
+                            <option value="Employee">
+                                Employee
+                            </option>
+
                         </select>
 
                     </div>
@@ -219,10 +229,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             id="status"
                             name="status"
                             class="form-select"
+                            required
                         >
-                            <option value="">Select status</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+
+                            <option value="">
+                                Select status
+                            </option>
+
+                            <option value="active">
+                                Active
+                            </option>
+
+                            <option value="inactive">
+                                Inactive
+                            </option>
+
                         </select>
 
                     </div>
@@ -233,10 +254,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             <button
                 type="submit"
-                class="btn-user">
-
+                class="btn-user"
+            >
                 Create User
-
             </button>
 
         </form>
@@ -245,9 +265,99 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 </div>
 
+
+<script>
+
+document
+    .getElementById("userForm")
+    .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const form = this;
+
+        const messageBox =
+            document.getElementById("message");
+
+        const formData =
+            new FormData(form);
+
+        messageBox.innerHTML = "";
+
+        try {
+
+            const response = await fetch(
+                "/Employee_App/routes/api.php/users",
+                {
+                    method: "POST",
+                    body: formData,
+                    credentials: "same-origin"
+                }
+            );
+
+            const result =
+                await response.json();
+
+            if (result.success) {
+
+                messageBox.innerHTML =
+                    '<div class="alert alert-success">' +
+                    escapeHtml(result.message) +
+                    '</div>';
+
+                form.reset();
+
+            } else {
+
+                messageBox.innerHTML =
+                    '<div class="alert alert-danger">' +
+                    escapeHtml(result.message) +
+                    '</div>';
+
+            }
+
+            setTimeout(function() {
+
+                messageBox.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+
+            }, 100);
+
+        } catch (error) {
+
+            messageBox.innerHTML =
+                '<div class="alert alert-danger">' +
+                'Unable to connect to the server.' +
+                '</div>';
+
+            console.error(error);
+
+        }
+
+    });
+
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value ?? "";
+
+    return div.innerHTML;
+
+}
+
+</script>
+
+
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
 </script>
 
 </body>
+
 </html>

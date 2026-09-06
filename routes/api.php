@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . "/../utilities/Response.php";
+require_once __DIR__ . "/../middleware/CsrfMiddleware.php";
 
 $method = $_SERVER["REQUEST_METHOD"];
 
@@ -19,30 +20,145 @@ $path = str_replace(
 
 
 /*
-|--------------------------------------------------------------------------|
-| GET ALL EMPLOYEES
-|--------------------------------------------------------------------------|
+|--------------------------------------------------------------------------
+| GET ALL / FILTERED EMPLOYEES
+|--------------------------------------------------------------------------
 */
 
-if ($method === "GET" && $path === "/employees") {
+if (
+    $method === "GET" &&
+    $path === "/employees"
+) {
 
     require_once __DIR__ . "/../controllers/EmployeeController.php";
 
     $controller = new EmployeeController();
 
-    $employees = $controller->getAllEmployees();
+
+    /*
+    |--------------------------------------------------------------------------
+    | FILTERS
+    |--------------------------------------------------------------------------
+    */
+
+    $search =
+        trim($_GET["search"] ?? "");
+
+    $departmentId =
+        $_GET["department_id"] ?? "";
+
+    $status =
+        $_GET["status"] ?? "";
+
+    $sort =
+        $_GET["sort"] ?? "";
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PAGINATION
+    |--------------------------------------------------------------------------
+    */
+
+    $limit = 5;
+
+    $page =
+        isset($_GET["page"])
+            ? (int) $_GET["page"]
+            : 1;
+
+    if ($page < 1) {
+        $page = 1;
+    }
+
+
+    $offset =
+        ($page - 1) * $limit;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | COUNT EMPLOYEES
+    |--------------------------------------------------------------------------
+    */
+
+    $totalEmployees =
+        $controller->countFilteredEmployees(
+            $search,
+            $departmentId,
+            $status
+        );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TOTAL PAGES
+    |--------------------------------------------------------------------------
+    */
+
+    $totalPages =
+        (int) ceil(
+            $totalEmployees / $limit
+        );
+
+
+    if (
+        $totalPages > 0 &&
+        $page > $totalPages
+    ) {
+
+        $page = $totalPages;
+
+        $offset =
+            ($page - 1) * $limit;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | GET EMPLOYEES
+    |--------------------------------------------------------------------------
+    */
+
+    $employees =
+        $controller->getFilteredEmployees(
+            $search,
+            $departmentId,
+            $status,
+            $sort,
+            $limit,
+            $offset
+        );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | JSON RESPONSE
+    |--------------------------------------------------------------------------
+    */
 
     Response::json(
-        $employees,
+        [
+            "success" => true,
+
+            "data" => $employees,
+
+            "pagination" => [
+                "current_page" => $page,
+                "per_page" => $limit,
+                "total_employees" => $totalEmployees,
+                "total_pages" => $totalPages
+            ]
+        ],
         200
     );
 }
 
 
 /*
-|--------------------------------------------------------------------------|
+|--------------------------------------------------------------------------
 | GET SINGLE EMPLOYEE
-|--------------------------------------------------------------------------|
+|--------------------------------------------------------------------------
 */
 
 if (
@@ -60,9 +176,10 @@ if (
 
     $employeeId = $matches[1];
 
-    $employee = $controller->getEmployeeById(
-        $employeeId
-    );
+    $employee =
+        $controller->getEmployeeById(
+            $employeeId
+        );
 
     if (!$employee) {
 
@@ -83,49 +200,61 @@ if (
 
 
 /*
-|--------------------------------------------------------------------------|
+|--------------------------------------------------------------------------
 | CREATE EMPLOYEE
-|--------------------------------------------------------------------------|
+|--------------------------------------------------------------------------
 */
 
-if ($method === "POST" && $path === "/employees") {
+if (
+    $method === "POST" &&
+    $path === "/employees"
+) {
 
-    $input = json_decode(
-        file_get_contents("php://input"),
-        true
-    );
+    /*
+    |--------------------------------------------------------------------------
+    | CSRF VALIDATION
+    |--------------------------------------------------------------------------
+    */
 
-    if (!is_array($input)) {
+    if (
+        !CsrfMiddleware::validateToken(
+            $_POST["csrf_token"] ?? ""
+        )
+    ) {
 
         Response::json(
             [
                 "success" => false,
-                "message" => "Invalid JSON request body."
+                "message" => "Invalid CSRF token."
             ],
-            400
+            403
         );
     }
+
 
     require_once __DIR__ . "/../controllers/EmployeeController.php";
 
     $controller = new EmployeeController();
 
-    $result = $controller->createEmployee(
-        $input["employee_id"] ?? "",
-        $input["first_name"] ?? "",
-        $input["last_name"] ?? "",
-        $input["email"] ?? "",
-        $input["phone"] ?? "",
-        $input["date_of_birth"] ?? "",
-        $input["gender"] ?? "",
-        $input["date_of_joining"] ?? "",
-        $input["department_id"] ?? "",
-        $input["designation"] ?? "",
-        $input["salary"] ?? "",
-        $input["address"] ?? "",
-        null,
-        $input["status"] ?? ""
-    );
+
+    $result =
+        $controller->createEmployee(
+            $_POST["employee_id"] ?? "",
+            $_POST["first_name"] ?? "",
+            $_POST["last_name"] ?? "",
+            $_POST["email"] ?? "",
+            $_POST["phone"] ?? "",
+            $_POST["date_of_birth"] ?? "",
+            $_POST["gender"] ?? "",
+            $_POST["date_of_joining"] ?? "",
+            $_POST["department_id"] ?? "",
+            $_POST["designation"] ?? "",
+            $_POST["salary"] ?? "",
+            $_POST["address"] ?? "",
+            $_FILES["profile_photo"] ?? null,
+            $_POST["status"] ?? ""
+        );
+
 
     if ($result["success"]) {
 
@@ -143,13 +272,24 @@ if ($method === "POST" && $path === "/employees") {
 
 
 /*
-|--------------------------------------------------------------------------|
+|--------------------------------------------------------------------------
 | UPDATE EMPLOYEE
-|--------------------------------------------------------------------------|
+|--------------------------------------------------------------------------
 */
 
+$isUpdateRequest =
+    $method === "PUT" ||
+    (
+        $method === "POST" &&
+        isset($_SERVER["HTTP_X_HTTP_METHOD_OVERRIDE"]) &&
+        strtoupper(
+            $_SERVER["HTTP_X_HTTP_METHOD_OVERRIDE"]
+        ) === "PUT"
+    );
+
+
 if (
-    $method === "PUT" &&
+    $isUpdateRequest &&
     preg_match(
         "#^/employees/([^/]+)$#",
         $path,
@@ -159,30 +299,88 @@ if (
 
     $employeeId = $matches[1];
 
-    $input = json_decode(
-        file_get_contents("php://input"),
-        true
-    );
 
-    if (!is_array($input)) {
+    /*
+    |--------------------------------------------------------------------------
+    | CSRF VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        !CsrfMiddleware::validateToken(
+            $_POST["csrf_token"] ?? ""
+        )
+    ) {
 
         Response::json(
             [
                 "success" => false,
-                "message" => "Invalid JSON request body."
+                "message" => "Invalid CSRF token."
             ],
-            400
+            403
         );
     }
 
-    require_once __DIR__ . "/../controllers/EmployeeController.php";
 
-    $controller = new EmployeeController();
+    require_once __DIR__ .
+        "/../controllers/EmployeeController.php";
 
-    $result = $controller->updateEmployee(
-        $employeeId,
-        $input
-    );
+    $controller =
+        new EmployeeController();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | EMPLOYEE DATA
+    |--------------------------------------------------------------------------
+    */
+
+    $data = [];
+
+    $editableFields = [
+        "first_name",
+        "last_name",
+        "email",
+        "phone",
+        "date_of_birth",
+        "gender",
+        "date_of_joining",
+        "department_id",
+        "designation",
+        "salary",
+        "address",
+        "status"
+    ];
+
+
+    foreach ($editableFields as $field) {
+
+        if (isset($_POST[$field])) {
+
+            $data[$field] =
+                trim($_POST[$field]);
+        }
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE EMPLOYEE
+    |--------------------------------------------------------------------------
+    */
+
+    $result =
+        $controller->updateEmployee(
+            $employeeId,
+            $data
+        );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESPONSE
+    |--------------------------------------------------------------------------
+    */
 
     if ($result["success"]) {
 
@@ -197,6 +395,14 @@ if (
         400
     );
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| DELETE / DEACTIVATE EMPLOYEE
+|--------------------------------------------------------------------------
+*/
+
 if (
     $method === "DELETE" &&
     preg_match(
@@ -208,29 +414,113 @@ if (
 
     $employeeId = $matches[1];
 
-    require_once __DIR__ . "/../controllers/EmployeeController.php";
+    require_once __DIR__ .
+        "/../controllers/EmployeeController.php";
 
-    $controller = new EmployeeController();
+    $controller =
+        new EmployeeController();
 
-    $result = $controller->deactivateEmployee(
-        $employeeId
-    );
+
+    $result =
+        $controller->deactivateEmployee(
+            $employeeId
+        );
+
+
     if ($result["success"]) {
 
+        Response::json(
+            $result,
+            200
+        );
+    }
+
+
     Response::json(
-        [
-            "success" => true,
-            "message" => "Employee deactivated successfully."
-        ],
-        200
+        $result,
+        404
     );
 }
+/*
+|--------------------------------------------------------------------------
+| CREATE USER
+|--------------------------------------------------------------------------
+*/
 
-Response::json(
-    [
-        "success" => false,
-        "message" => "Employee not found or could not be deactivated."
-    ],
-    404
-);
+if (
+    $method === "POST" &&
+    $path === "/users"
+) {
+
+    /*
+    |--------------------------------------------------------------------------
+    | CSRF VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        !CsrfMiddleware::validateToken(
+            $_POST["csrf_token"] ?? ""
+        )
+    ) {
+
+        Response::json(
+            [
+                "success" => false,
+                "message" => "Invalid CSRF token."
+            ],
+            403
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | USER CONTROLLER
+    |--------------------------------------------------------------------------
+    */
+
+    require_once __DIR__ .
+        "/../controllers/UserController.php";
+
+    $controller =
+        new UserController();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE USER
+    |--------------------------------------------------------------------------
+    */
+
+    $result =
+        $controller->createUser(
+            $_POST["name"] ?? "",
+            $_POST["email"] ?? "",
+            $_POST["username"] ?? "",
+            $_POST["password"] ?? "",
+            $_POST["role"] ?? "",
+            $_POST["status"] ?? ""
+        );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | JSON RESPONSE
+    |--------------------------------------------------------------------------
+    */
+
+    if ($result["success"]) {
+
+        Response::json(
+            $result,
+            201
+        );
+    }
+
+
+    Response::json(
+        $result,
+        400
+    );
 }

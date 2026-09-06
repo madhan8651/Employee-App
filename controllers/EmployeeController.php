@@ -621,6 +621,7 @@ public function countFilteredEmployees(
     );
 
     if ($success) {
+
         return [
             "success" => true,
             "message" => "Employee deactivated successfully."
@@ -629,7 +630,7 @@ public function countFilteredEmployees(
 
     return [
         "success" => false,
-        "message" => "Employee could not be deactivated."
+        "message" => "Employee not found or could not be deactivated."
     ];
 }
 }
