@@ -18,6 +18,12 @@ const message =
     document.getElementById("message");
 
 
+/*
+|--------------------------------------------------------------------------
+| HTML ESCAPE
+|--------------------------------------------------------------------------
+*/
+
 function escapeHtml(value)
 {
     return String(value ?? "")
@@ -29,30 +35,37 @@ function escapeHtml(value)
 }
 
 
-function showMessage(
-    text,
-    success
-)
+/*
+|--------------------------------------------------------------------------
+| SHOW MESSAGE
+|--------------------------------------------------------------------------
+*/
+
+function showMessage(text, type)
 {
-    message.innerHTML =
-        `
-        <div class="alert ${success ? "alert-success" : "alert-danger"}">
+    message.innerHTML = `
+        <div class="alert alert-${type}">
             ${escapeHtml(text)}
         </div>
-        `;
+    `;
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| DEACTIVATE DEPARTMENT
+|--------------------------------------------------------------------------
+*/
 
 deactivateButton.addEventListener(
     "click",
     async function ()
     {
-
-        if (!departmentId) {
+        if (departmentId === "") {
 
             showMessage(
                 "Invalid department ID.",
-                false
+                "danger"
             );
 
             return;
@@ -96,8 +109,13 @@ deactivateButton.addEventListener(
                 await response.text();
 
 
-            let result;
+            console.log(
+                "Department deactivate response:",
+                text
+            );
 
+
+            let result;
 
             try {
 
@@ -124,7 +142,7 @@ deactivateButton.addEventListener(
             showMessage(
                 result.message ||
                 "Department deactivated successfully.",
-                true
+                "success"
             );
 
 
@@ -140,10 +158,16 @@ deactivateButton.addEventListener(
 
         } catch (error) {
 
+            console.error(
+                "Department Deactivate Error:",
+                error
+            );
+
+
             showMessage(
                 error.message ||
                 "Unable to deactivate department.",
-                false
+                "danger"
             );
 
 
@@ -152,6 +176,5 @@ deactivateButton.addEventListener(
             deactivateButton.textContent =
                 "Deactivate Department";
         }
-
     }
 );

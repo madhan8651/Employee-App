@@ -399,33 +399,28 @@ if (
 
 /*
 |--------------------------------------------------------------------------
-| DELETE / DEACTIVATE EMPLOYEE
+| DELETE / DEACTIVATE DEPARTMENT
 |--------------------------------------------------------------------------
 */
 
 if (
     $method === "DELETE" &&
     preg_match(
-        "#^/employees/([^/]+)$#",
+        "#^/departments/([0-9]+)$#",
         $path,
         $matches
     )
 ) {
 
-    $employeeId = $matches[1];
-
-    require_once __DIR__ .
-        "/../controllers/EmployeeController.php";
+    $departmentId = (int) $matches[1];
 
     $controller =
-        new EmployeeController();
-
+        new DepartmentController();
 
     $result =
-        $controller->deactivateEmployee(
-            $employeeId
+        $controller->deactivateDepartment(
+            $departmentId
         );
-
 
     if ($result["success"]) {
 
@@ -435,10 +430,9 @@ if (
         );
     }
 
-
     Response::json(
         $result,
-        404
+        400
     );
 }
 /*
@@ -554,7 +548,7 @@ if ($method === "GET" && preg_match("#^/departments/([0-9]+)$#", $path, $matches
 
     $departmentId = (int) $matches[1];
 
-    $controller = new DepartmentController($pdo);
+    $controller = new DepartmentController();
 
     $department = $controller->getDepartmentById($departmentId);
 
