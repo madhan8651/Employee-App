@@ -44,10 +44,23 @@ RoleMiddleware::check("Admin");
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
     >
+
+
+    <!-- Dashboard CSS -->
+
     <link
-    rel="stylesheet"
-    href="../../../public/css/style.css"
->
+        rel="stylesheet"
+        href="../../../public/css/dashboard.css"
+    >
+
+
+    <!-- Shared CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../../public/css/style.css"
+    >
+
 </head>
 
 
@@ -82,19 +95,38 @@ RoleMiddleware::check("Admin");
 
         <div class="page-header">
 
-            <span class="eyebrow">
-                Administration
-            </span>
+            <div class="header-content">
 
-            <h2>
-                Admin Dashboard
-            </h2>
-            <p>
-    Welcome, <strong><?= htmlspecialchars($_SESSION["name"]) ?></strong>
-</p>
-            <p>
-                Manage employees, departments and application users.
-            </p>
+                <span class="eyebrow">
+                    Administration
+                </span>
+
+                <h2>
+                    Admin Dashboard
+                </h2>
+
+                <p>
+                    Welcome,
+                    <strong>
+                        <?= htmlspecialchars($_SESSION["name"]) ?>
+                    </strong>
+                </p>
+
+                <p>
+                    Manage employees and departments from one place.
+                </p>
+
+            </div>
+
+
+            <!-- Add User -->
+
+            <a
+                href="add.php"
+                class="btn btn-add add-user-button"
+            >
+                + Add User
+            </a>
 
         </div>
 
@@ -106,7 +138,7 @@ RoleMiddleware::check("Admin");
 
             <!-- Employee Management -->
 
-            <div class="col-md-4">
+            <div class="col-md-6">
 
                 <a
                     href="../employees/index.php"
@@ -141,10 +173,10 @@ RoleMiddleware::check("Admin");
 
             <!-- Department Management -->
 
-            <div class="col-md-4">
+            <div class="col-md-6">
 
                 <a
-                    href="../departments/index.php"
+                    href="departments/index.php"
                     class="dashboard-link"
                 >
 
@@ -159,8 +191,8 @@ RoleMiddleware::check("Admin");
                         </h5>
 
                         <p>
-                            Create and manage departments
-                            and department information.
+                            Add, view, edit, search and
+                            manage department records.
                         </p>
 
                         <div class="module-action">
@@ -173,81 +205,67 @@ RoleMiddleware::check("Admin");
 
             </div>
 
-
-            <!-- User Management -->
-
-            <div class="col-md-4">
-
-                <a
-                    href="../users/index.php"
-                    class="dashboard-link"
-                >
-
-                    <div class="module-card">
-
-                        <div class="module-icon">
-                            👤
-                        </div>
-
-                        <h5>
-                            User Management
-                        </h5>
-
-                        <p>
-                            Manage application users,
-                            roles and login accounts.
-                        </p>
-
-                        <div class="module-action">
-                            Manage Users →
-                        </div>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-
         </div>
 
 
-        <!-- Logout -->
+        <!-- Account Actions -->
 
-        <div class="bottom-actions">
+        <div class="account-actions">
 
-    <!-- Account Actions -->
 
-<div class="account-actions">
+            <!-- Change Password -->
 
-    <a
-        href="../../../public/change-password.php"
-        class="account-action account-action-password"
-    >
-        <span class="account-action-icon">🔑</span>
+            <a
+                href="/Employee_App/routes/auth.php/change-password"
+                class="account-action"
+            >
 
-        <span>
-            <strong>Change Password</strong>
-            <small>Update your login password</small>
-        </span>
-    </a>
+                <div class="account-action-icon">
+                    🔑
+                </div>
 
-    <a
-        href="../../../public/logout.php"
-        class="account-action account-action-logout"
-    >
-        <span class="account-action-icon">↪</span>
+                <div>
 
-        <span>
-            <strong>Logout</strong>
-            <small>Sign out of your account</small>
-        </span>
-    </a>
+                    <strong>
+                        Change Password
+                    </strong>
 
-</div>
+                    <small>
+                        Update your account password
+                    </small>
 
-</div>
+                </div>
 
+            </a>
+
+
+            <!-- Logout -->
+
+            <a
+                href="/Employee_App/routes/auth.php/logout"
+                class="account-action account-action-logout"
+            >
+
+                <div class="account-action-icon">
+                    ↪
+                </div>
+
+                <div>
+
+                    <strong>
+                        Logout
+                    </strong>
+
+                    <small>
+                        Sign out of your account
+                    </small>
+
+                </div>
+
+            </a>
+
+
+        </div>
 
     </div>
 

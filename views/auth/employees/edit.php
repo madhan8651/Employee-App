@@ -2,7 +2,6 @@
 
 require_once __DIR__ . "/../../../middleware/AuthMiddleware.php";
 require_once __DIR__ . "/../../../middleware/CsrfMiddleware.php";
-require_once __DIR__ . "/../../../controllers/EmployeeController.php";
 require_once __DIR__ . "/../../../models/Department.php";
 require_once __DIR__ . "/../../../config/database.php";
 
@@ -10,144 +9,10 @@ AuthMiddleware::check();
 
 $csrfToken = CsrfMiddleware::generateToken();
 
-$controller = new EmployeeController();
-
 $departmentModel = new Department($pdo);
 $departments = $departmentModel->getActiveDepartments();
 
-$message = "";
-$result = null;
-
-
-// Get employee ID
-
-$employee_id = $_GET["employee_id"] ?? $_POST["employee_id"] ?? "";
-
-
-// Check employee ID
-
-if (empty($employee_id)) {
-    die("Employee ID is required.");
-}
-
-
-// Get current employee details
-
-$employee = $controller->getEmployeeById($employee_id);
-
-
-// Check employee exists
-
-if (!$employee) {
-    die("Employee not found.");
-}
-
-
-// Handle form submission
-
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    // Validate CSRF token
-
-    if (
-        !CsrfMiddleware::validateToken(
-            $_POST["csrf_token"] ?? ""
-        )
-    ) {
-
-        $result = [
-            "success" => false,
-            "message" => "Invalid CSRF token."
-        ];
-
-        $message = $result["message"];
-
-    } else {
-
-        $data = [];
-
-        $editableFields = [
-            "first_name",
-            "last_name",
-            "email",
-            "phone",
-            "date_of_birth",
-            "gender",
-            "date_of_joining",
-            "department_id",
-            "designation",
-            "salary",
-            "address",
-            "status"
-        ];
-
-
-        foreach ($editableFields as $field) {
-
-            if (isset($_POST[$field])) {
-
-                $newValue = trim($_POST[$field]);
-                $oldValue = (string) $employee[$field];
-
-                // Add only changed fields
-
-                if ($newValue !== $oldValue) {
-                    $data[$field] = $newValue;
-                }
-            }
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Profile Photo
-        |--------------------------------------------------------------------------
-        |
-        | EmployeeController handles the actual upload.
-        |
-        */
-
-        $photoUploaded =
-            isset($_FILES["profile_photo"]) &&
-            $_FILES["profile_photo"]["error"] !== UPLOAD_ERR_NO_FILE;
-
-
-        // Update if something changed
-
-        if (!empty($data) || $photoUploaded) {
-
-            $result = $controller->updateEmployee(
-                $employee_id,
-                $data
-            );
-
-            $message = $result["message"];
-
-
-            // Reload updated employee data
-
-            if ($result["success"]) {
-
-                $employee = $controller->getEmployeeById(
-                    $employee_id
-                );
-
-            }
-
-        } else {
-
-            $result = [
-                "success" => false,
-                "message" => "No changes were made."
-            ];
-
-            $message = $result["message"];
-
-        }
-
-    }
-
-}
+$employee_id = $_GET["employee_id"] ?? "";
 
 ?>
 
@@ -168,10 +33,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </title>
 
 
+    <!-- Bootstrap -->
+
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
+
+
+    <!-- Google Font -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -179,16 +49,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
     >
-    <link rel="stylesheet" href="../../../public/css/style.css">
+
+
+    <!-- Custom CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../../public/css/style.css"
+    >
 
 </head>
 
 
 <body>
 
+
 <div class="employee-shell form-page">
 
     <div class="employee-card">
+
+
+        <!-- Brand -->
 
         <div class="brand">
 
@@ -202,6 +83,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         </div>
 
+
+        <!-- Form Header -->
 
         <div class="form-header">
 
@@ -220,22 +103,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </div>
 
 
-        <?php if (!empty($message)): ?>
-
-            <div
-                class="alert <?= $result["success"] ? "alert-success" : "alert-danger" ?>"
-            >
-                <?= htmlspecialchars($message) ?>
-            </div>
-
-        <?php endif; ?>
-
+        <!-- Form -->
 
         <form
+            id="editEmployeeForm"
             method="POST"
             action=""
             enctype="multipart/form-data"
         >
+
+            <!-- CSRF Token -->
 
             <input
                 type="hidden"
@@ -243,12 +120,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 value="<?= htmlspecialchars($csrfToken) ?>"
             >
 
+
+            <!-- Employee ID -->
+
             <input
                 type="hidden"
                 name="employee_id"
-                value="<?= htmlspecialchars($employee["employee_id"]) ?>"
+                id="employee_id"
+                value="<?= htmlspecialchars($employee_id) ?>"
             >
 
+
+            <!-- Message -->
+
+            <div id="message"></div>
+
+
+            <!-- Personal Information -->
 
             <div class="form-section">
 
@@ -257,6 +145,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
 
                 <div class="row">
+
+
+                    <!-- Employee ID -->
 
                     <div class="col-md-6">
 
@@ -270,7 +161,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 type="text"
                                 id="employee_id_display"
                                 class="form-control"
-                                value="<?= htmlspecialchars($employee["employee_id"]) ?>"
                                 readonly
                             >
 
@@ -278,6 +168,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     </div>
 
+
+                    <!-- First Name -->
 
                     <div class="col-md-6">
 
@@ -292,13 +184,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 id="first_name"
                                 name="first_name"
                                 class="form-control"
-                                value="<?= htmlspecialchars($employee["first_name"]) ?>"
                             >
 
                         </div>
 
                     </div>
 
+
+                    <!-- Last Name -->
 
                     <div class="col-md-6">
 
@@ -313,13 +206,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 id="last_name"
                                 name="last_name"
                                 class="form-control"
-                                value="<?= htmlspecialchars($employee["last_name"]) ?>"
                             >
 
                         </div>
 
                     </div>
 
+
+                    <!-- Email -->
 
                     <div class="col-md-6">
 
@@ -334,13 +228,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 id="email"
                                 name="email"
                                 class="form-control"
-                                value="<?= htmlspecialchars($employee["email"]) ?>"
                             >
 
                         </div>
 
                     </div>
 
+
+                    <!-- Phone -->
 
                     <div class="col-md-6">
 
@@ -355,13 +250,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 id="phone"
                                 name="phone"
                                 class="form-control"
-                                value="<?= htmlspecialchars($employee["phone"]) ?>"
                             >
 
                         </div>
 
                     </div>
 
+
+                    <!-- Date of Birth -->
 
                     <div class="col-md-6">
 
@@ -376,13 +272,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 id="date_of_birth"
                                 name="date_of_birth"
                                 class="form-control"
-                                value="<?= htmlspecialchars($employee["date_of_birth"]) ?>"
                             >
 
                         </div>
 
                     </div>
 
+
+                    <!-- Gender -->
 
                     <div class="col-md-6">
 
@@ -402,24 +299,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                     Select gender
                                 </option>
 
-                                <option
-                                    value="Male"
-                                    <?= $employee["gender"] === "Male" ? "selected" : "" ?>
-                                >
+                                <option value="Male">
                                     Male
                                 </option>
 
-                                <option
-                                    value="Female"
-                                    <?= $employee["gender"] === "Female" ? "selected" : "" ?>
-                                >
+                                <option value="Female">
                                     Female
                                 </option>
 
-                                <option
-                                    value="Other"
-                                    <?= $employee["gender"] === "Other" ? "selected" : "" ?>
-                                >
+                                <option value="Other">
                                     Other
                                 </option>
 
@@ -429,10 +317,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     </div>
 
+
                 </div>
 
             </div>
 
+
+            <!-- Employment Information -->
 
             <div class="form-section">
 
@@ -441,6 +332,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
 
                 <div class="row">
+
+
+                    <!-- Date of Joining -->
 
                     <div class="col-md-6">
 
@@ -455,13 +349,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 id="date_of_joining"
                                 name="date_of_joining"
                                 class="form-control"
-                                value="<?= htmlspecialchars($employee["date_of_joining"]) ?>"
                             >
 
                         </div>
 
                     </div>
 
+
+                    <!-- Department -->
 
                     <div class="col-md-6">
 
@@ -485,7 +380,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                                     <option
                                         value="<?= htmlspecialchars($department["department_id"]) ?>"
-                                        <?= $employee["department_id"] == $department["department_id"] ? "selected" : "" ?>
                                     >
                                         <?= htmlspecialchars($department["department_name"]) ?>
                                     </option>
@@ -498,6 +392,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     </div>
 
+
+                    <!-- Designation -->
 
                     <div class="col-md-6">
 
@@ -512,13 +408,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 id="designation"
                                 name="designation"
                                 class="form-control"
-                                value="<?= htmlspecialchars($employee["designation"]) ?>"
                             >
 
                         </div>
 
                     </div>
 
+
+                    <!-- Salary -->
 
                     <div class="col-md-6">
 
@@ -533,7 +430,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 id="salary"
                                 name="salary"
                                 class="form-control"
-                                value="<?= htmlspecialchars($employee["salary"]) ?>"
                                 step="0.01"
                             >
 
@@ -541,6 +437,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     </div>
 
+
+                    <!-- Status -->
 
                     <div class="col-md-6">
 
@@ -556,17 +454,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 class="form-select"
                             >
 
-                                <option
-                                    value="active"
-                                    <?= strtolower($employee["status"]) === "active" ? "selected" : "" ?>
-                                >
+                                <option value="">
+                                    Select status
+                                </option>
+
+                                <option value="active">
                                     Active
                                 </option>
 
-                                <option
-                                    value="inactive"
-                                    <?= strtolower($employee["status"]) === "inactive" ? "selected" : "" ?>
-                                >
+                                <option value="inactive">
                                     Inactive
                                 </option>
 
@@ -576,10 +472,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     </div>
 
+
                 </div>
 
             </div>
 
+
+            <!-- Address -->
 
             <div class="form-section">
 
@@ -598,12 +497,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         name="address"
                         class="form-control"
                         placeholder="Enter address"
-                    ><?= htmlspecialchars($employee["address"]) ?></textarea>
+                    ></textarea>
 
                 </div>
 
             </div>
 
+
+            <!-- Profile Photo -->
 
             <div class="form-section">
 
@@ -625,19 +526,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         accept="image/jpeg,image/png,image/webp"
                     >
 
-                    <?php if (!empty($employee["profile_photo"])): ?>
-
-                        <small class="text-muted d-block mt-2">
-                            Current profile photo:
-                            <?= htmlspecialchars($employee["profile_photo"]) ?>
-                        </small>
-
-                    <?php endif; ?>
+                    <small
+                        id="currentPhoto"
+                        class="text-muted d-block mt-2"
+                    ></small>
 
                 </div>
 
             </div>
 
+
+            <!-- Buttons -->
 
             <div class="row g-2">
 
@@ -658,6 +557,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <button
                         type="submit"
                         class="btn btn-submit"
+                        id="updateButton"
                     >
                         Update Employee
                     </button>
@@ -666,6 +566,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             </div>
 
+
         </form>
 
     </div>
@@ -673,9 +574,316 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </div>
 
 
+<!-- Bootstrap JS -->
+
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
 </script>
+
+
+<script>
+
+/*
+|--------------------------------------------------------------------------
+| API URL
+|--------------------------------------------------------------------------
+*/
+
+const employeeId =
+    <?= json_encode($employee_id) ?>;
+
+const apiUrl =
+    "/Employee_App/routes/api.php/employees/";
+
+
+/*
+|--------------------------------------------------------------------------
+| Elements
+|--------------------------------------------------------------------------
+*/
+
+const employeeForm =
+    document.getElementById("editEmployeeForm");
+
+const messageBox =
+    document.getElementById("message");
+
+const updateButton =
+    document.getElementById("updateButton");
+
+
+/*
+|--------------------------------------------------------------------------
+| SHOW MESSAGE
+|--------------------------------------------------------------------------
+*/
+
+function showMessage(message, success)
+{
+    messageBox.innerHTML =
+        `
+        <div class="alert ${success ? "alert-success" : "alert-danger"}">
+            ${message}
+        </div>
+        `;
+
+
+    setTimeout(function () {
+
+        messageBox.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+    }, 100);
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| LOAD EMPLOYEE
+|--------------------------------------------------------------------------
+*/
+
+async function loadEmployee()
+{
+
+    if (!employeeId) {
+
+        showMessage(
+            "Employee ID is required.",
+            false
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                apiUrl +
+                encodeURIComponent(employeeId)
+            );
+
+
+        const employee =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            showMessage(
+                employee.message ||
+                "Employee not found.",
+                false
+            );
+
+            return;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILL FORM
+        |--------------------------------------------------------------------------
+        */
+
+        document.getElementById(
+            "employee_id_display"
+        ).value =
+            employee.employee_id;
+
+
+        document.getElementById(
+            "employee_id"
+        ).value =
+            employee.employee_id;
+
+
+        document.getElementById(
+            "first_name"
+        ).value =
+            employee.first_name || "";
+
+
+        document.getElementById(
+            "last_name"
+        ).value =
+            employee.last_name || "";
+
+
+        document.getElementById(
+            "email"
+        ).value =
+            employee.email || "";
+
+
+        document.getElementById(
+            "phone"
+        ).value =
+            employee.phone || "";
+
+
+        document.getElementById(
+            "date_of_birth"
+        ).value =
+            employee.date_of_birth || "";
+
+
+        document.getElementById(
+            "gender"
+        ).value =
+            employee.gender || "";
+
+
+        document.getElementById(
+            "date_of_joining"
+        ).value =
+            employee.date_of_joining || "";
+
+
+        document.getElementById(
+            "department_id"
+        ).value =
+            employee.department_id || "";
+
+
+        document.getElementById(
+            "designation"
+        ).value =
+            employee.designation || "";
+
+
+        document.getElementById(
+            "salary"
+        ).value =
+            employee.salary || "";
+
+
+        document.getElementById(
+            "status"
+        ).value =
+            (employee.status || "").toLowerCase();
+
+
+        document.getElementById(
+            "address"
+        ).value =
+            employee.address || "";
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CURRENT PROFILE PHOTO
+        |--------------------------------------------------------------------------
+        */
+
+        if (employee.profile_photo) {
+
+            document.getElementById(
+                "currentPhoto"
+            ).textContent =
+                "Current profile photo: " +
+                employee.profile_photo;
+
+        }
+
+    } catch (error) {
+
+        showMessage(
+            "Unable to connect to Employee API.",
+            false
+        );
+    }
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE EMPLOYEE
+|--------------------------------------------------------------------------
+*/
+
+employeeForm.addEventListener(
+    "submit",
+    async function (event)
+    {
+
+        event.preventDefault();
+
+
+        const formData =
+            new FormData(employeeForm);
+
+
+        updateButton.disabled = true;
+
+        updateButton.textContent =
+            "Updating...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    apiUrl +
+                    encodeURIComponent(employeeId),
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "X-HTTP-Method-Override": "PUT"
+                        },
+
+                        credentials: "same-origin",
+
+                        body: formData
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            showMessage(
+                result.message ||
+                "Unable to update employee.",
+                result.success
+            );
+
+
+        } catch (error) {
+
+            showMessage(
+                "Unable to connect to Employee API.",
+                false
+            );
+
+        } finally {
+
+            updateButton.disabled = false;
+
+            updateButton.textContent =
+                "Update Employee";
+        }
+
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| LOAD EMPLOYEE WHEN PAGE OPENS
+|--------------------------------------------------------------------------
+*/
+
+loadEmployee();
+
+</script>
+
 
 </body>
 

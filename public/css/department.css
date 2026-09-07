@@ -1,0 +1,109 @@
+/* =========================================
+   DEPARTMENT DIRECTORY
+   ========================================= */
+
+.employee-shell {
+    width: 100%;
+}
+
+.employee-card {
+    width: 100%;
+}
+
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+.department-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+
+/* =========================================
+   TOP ACTIONS
+   ========================================= */
+
+.top-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+
+/* =========================================
+   SEARCH
+   ========================================= */
+
+.department-search-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.department-search-row .search-box {
+    flex: 1;
+}
+
+
+/* =========================================
+   TABLE
+   ========================================= */
+
+.department-table-wrapper {
+    width: 100%;
+}
+
+.department-table-wrapper table {
+    width: 100%;
+}
+
+
+/* =========================================
+   DEPARTMENT NAME
+   ========================================= */
+
+.department-name {
+    font-weight: 600;
+}
+
+.department-id {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+
+/* =========================================
+   ACTIONS
+   ========================================= */
+
+.department-actions {
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 768px) {
+
+    .department-page-header {
+        flex-direction: column;
+    }
+
+    .top-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .department-search-row {
+        flex-direction: column;
+    }
+
+}

@@ -1,7 +1,5 @@
 <?php
-
-require_once __DIR__ . "/../../middleware/CsrfMiddleware.php";
-
+require_once __DIR__ . "/../../../middleware/CsrfMiddleware.php";
 $csrfToken = CsrfMiddleware::generateToken();
 
 ?>
@@ -89,7 +87,7 @@ $csrfToken = CsrfMiddleware::generateToken();
 
         <form
             method="POST"
-            action="/Employee_App/public/change-password.php"
+            action="/Employee_App/routes/auth.php/change-password"
         >
         <input
     type="hidden"

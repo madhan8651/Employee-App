@@ -1,7 +1,6 @@
 <?php
 
 require_once __DIR__ . "/../../../middleware/CsrfMiddleware.php";
-require_once __DIR__ . "/../../../controllers/EmployeeController.php";
 require_once __DIR__ . "/../../../models/Department.php";
 require_once __DIR__ . "/../../../config/database.php";
 
@@ -9,50 +8,6 @@ $csrfToken = CsrfMiddleware::generateToken();
 
 $departmentModel = new Department($pdo);
 $departments = $departmentModel->getActiveDepartments();
-
-$message = "";
-$result = null;
-
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    // Validate CSRF token
-    if (
-        !CsrfMiddleware::validateToken(
-            $_POST["csrf_token"] ?? ""
-        )
-    ) {
-
-        $result = [
-            "success" => false,
-            "message" => "Invalid CSRF token."
-        ];
-
-        $message = $result["message"];
-
-    } else {
-
-        $controller = new EmployeeController();
-
-        $result = $controller->createEmployee(
-            $_POST["employee_id"] ?? "",
-            $_POST["first_name"] ?? "",
-            $_POST["last_name"] ?? "",
-            $_POST["email"] ?? "",
-            $_POST["phone"] ?? "",
-            $_POST["date_of_birth"] ?? "",
-            $_POST["gender"] ?? "",
-            $_POST["date_of_joining"] ?? "",
-            $_POST["department_id"] ?? "",
-            $_POST["designation"] ?? "",
-            $_POST["salary"] ?? "",
-            $_POST["address"] ?? "",
-            $_FILES["profile_photo"] ?? null,
-            $_POST["status"] ?? ""
-        );
-
-        $message = $result["message"];
-    }
-}
 
 ?>
 
@@ -84,18 +39,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <!-- Google Font -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
+
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
     >
-    <link rel="stylesheet" href="../../../public/css/style.css">
 
-
-    <style>
-
-        
-
-    </style>
+    <link
+        rel="stylesheet"
+        href="../../../public/css/style.css"
+    >
 
 </head>
 
@@ -143,32 +96,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </div>
 
 
-        <!-- Success / Error Message -->
-
-        <?php if ($message !== ""): ?>
-
-            <?php if ($result["success"]): ?>
-
-                <div class="alert alert-success">
-                    <?= htmlspecialchars($message) ?>
-                </div>
-
-            <?php else: ?>
-
-                <div class="alert alert-danger">
-                    <?= htmlspecialchars($message) ?>
-                </div>
-
-            <?php endif; ?>
-
-        <?php endif; ?>
-
-
         <!-- Form -->
 
         <form
+            id="employeeForm"
             method="POST"
-            action=""
+            action="/Employee_App/routes/api.php/employees"
             enctype="multipart/form-data"
         >
 
@@ -181,6 +114,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             >
 
 
+            <!-- Message -->
+
+            <div id="message"></div>
+
+
             <!-- Personal Information -->
 
             <div class="form-section">
@@ -191,6 +129,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 <div class="row">
 
+
+                    <!-- Employee ID -->
 
                     <div class="col-md-6">
 
@@ -213,6 +153,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </div>
 
 
+                    <!-- First Name -->
+
                     <div class="col-md-6">
 
                         <div class="form-group">
@@ -233,6 +175,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     </div>
 
+
+                    <!-- Last Name -->
 
                     <div class="col-md-6">
 
@@ -255,6 +199,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </div>
 
 
+                    <!-- Email -->
+
                     <div class="col-md-6">
 
                         <div class="form-group">
@@ -275,6 +221,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     </div>
 
+
+                    <!-- Phone -->
 
                     <div class="col-md-6">
 
@@ -297,6 +245,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </div>
 
 
+                    <!-- Date of Birth -->
+
                     <div class="col-md-6">
 
                         <div class="form-group">
@@ -316,6 +266,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     </div>
 
+
+                    <!-- Gender -->
 
                     <div class="col-md-6">
 
@@ -370,6 +322,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <div class="row">
 
 
+                    <!-- Date of Joining -->
+
                     <div class="col-md-6">
 
                         <div class="form-group">
@@ -389,6 +343,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     </div>
 
+
+                    <!-- Department -->
 
                     <div class="col-md-6">
 
@@ -425,6 +381,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </div>
 
 
+                    <!-- Designation -->
+
                     <div class="col-md-6">
 
                         <div class="form-group">
@@ -445,6 +403,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     </div>
 
+
+                    <!-- Salary -->
 
                     <div class="col-md-6">
 
@@ -467,6 +427,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     </div>
 
+
+                    <!-- Status -->
 
                     <div class="col-md-6">
 
@@ -564,6 +526,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <button
                 type="submit"
                 class="btn btn-submit"
+                id="submitButton"
             >
                 Create Employee
             </button>
@@ -576,8 +539,118 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </div>
 
 
+<!-- Bootstrap JS -->
+
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+<script>
+
+const employeeForm =
+    document.getElementById("employeeForm");
+
+const messageBox =
+    document.getElementById("message");
+
+const submitButton =
+    document.getElementById("submitButton");
+
+
+employeeForm.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+
+        const formData =
+            new FormData(employeeForm);
+
+
+        submitButton.disabled = true;
+
+        submitButton.textContent =
+            "Creating...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    employeeForm.action,
+                    {
+                        method: "POST",
+                        body: formData,
+                        credentials: "same-origin"
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (result.success) {
+
+    messageBox.innerHTML =
+        `
+        <div class="alert alert-success">
+            ${result.message}
+        </div>
+        `;
+
+    employeeForm.reset();
+
+} else {
+
+    messageBox.innerHTML =
+        `
+        <div class="alert alert-danger">
+            ${result.message}
+        </div>
+        `;
+}
+
+setTimeout(function () {
+
+    messageBox.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
+}, 100);
+
+
+        } catch (error) {
+
+    messageBox.innerHTML =
+        `
+        <div class="alert alert-danger">
+            Unable to connect to Employee API.
+        </div>
+        `;
+
+    setTimeout(function () {
+
+        messageBox.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+    }, 100);
+}
+
+
+        submitButton.disabled = false;
+
+        submitButton.textContent =
+            "Create Employee";
+
+    }
+);
+
 </script>
 
 
