@@ -608,17 +608,38 @@ public function countFilteredEmployees(
 
 
     // =========================
-    // DEACTIVATE EMPLOYEE
-    // =========================
+// DEACTIVATE EMPLOYEE
+// =========================
 
-    public function deactivateEmployee($employee_id)
+public function deactivateEmployee($employee_id)
 {
-    $success = $this->employeeModel->updateEmployee(
-        $employee_id,
-        [
-            "status" => "inactive"
-        ]
-    );
+    $employee =
+        $this->employeeModel->getEmployeeById(
+            $employee_id
+        );
+
+    if (!$employee) {
+
+        return [
+            "success" => false,
+            "message" => "Employee not found."
+        ];
+    }
+
+    if (
+        strtolower($employee["status"]) === "inactive"
+    ) {
+
+        return [
+            "success" => false,
+            "message" => "Employee is already inactive."
+        ];
+    }
+
+    $success =
+        $this->employeeModel->deactivateEmployee(
+            $employee_id
+        );
 
     if ($success) {
 
@@ -630,7 +651,7 @@ public function countFilteredEmployees(
 
     return [
         "success" => false,
-        "message" => "Employee not found or could not be deactivated."
+        "message" => "Employee could not be deactivated."
     ];
 }
 }

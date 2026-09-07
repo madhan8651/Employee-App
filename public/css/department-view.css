@@ -1,0 +1,65 @@
+.department-view-card {
+    width: 100%;
+    max-width: 550px;
+    margin: 30px auto 0;
+    padding: 8px 25px;
+    background: #ffffff;
+    border: 1px solid #e1e5eb;
+    border-radius: 18px;
+
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+
+    text-align: center;
+}
+
+.department-view-item {
+    padding: 24px 10px;
+    border-bottom: 1px solid #edf0f4;
+}
+
+.department-view-item:last-child {
+    border-bottom: none;
+}
+
+.department-view-label {
+    display: block;
+    margin-bottom: 8px;
+
+    font-size: 13px;
+    font-weight: 700;
+    color: #64748b;
+
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.department-view-value {
+    font-size: 18px;
+    font-weight: 500;
+    color: #111827;
+}
+
+.department-view-value.name {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.department-view-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+@media (max-width: 768px) {
+
+    .department-view-card {
+        max-width: 100%;
+        padding: 10px 20px;
+    }
+
+    .department-view-actions {
+        flex-direction: column;
+    }
+}

@@ -2,7 +2,7 @@
 
 require_once __DIR__ . "/../utilities/Response.php";
 require_once __DIR__ . "/../middleware/CsrfMiddleware.php";
-
+require_once __DIR__ . "/../controllers/DepartmentController.php";
 $method = $_SERVER["REQUEST_METHOD"];
 
 $path = parse_url(
@@ -522,5 +522,167 @@ if (
     Response::json(
         $result,
         400
+    );
+}
+// =========================
+// DEPARTMENT API ROUTES
+// =========================
+
+// GET /departments
+// GET /departments?search=IT
+if ($method === "GET" && $path === "/departments") {
+
+    $controller = new DepartmentController();
+
+    $search = trim($_GET["search"] ?? "");
+
+    if ($search !== "") {
+        $departments = $controller->searchDepartments($search);
+    } else {
+        $departments = $controller->getAllDepartments();
+    }
+
+    Response::json([
+        "success" => true,
+        "data" => $departments
+    ]);
+}
+
+
+// GET /departments/{id}
+if ($method === "GET" && preg_match("#^/departments/([0-9]+)$#", $path, $matches)) {
+
+    $departmentId = (int) $matches[1];
+
+    $controller = new DepartmentController($pdo);
+
+    $department = $controller->getDepartmentById($departmentId);
+
+    if (!$department) {
+        Response::json([
+            "success" => false,
+            "message" => "Department not found."
+        ], 404);
+    }
+
+    Response::json([
+        "success" => true,
+        "data" => $department
+    ]);
+}
+
+
+// POST /departments
+if ($method === "POST" && $path === "/departments") {
+
+    if (!CsrfMiddleware::validateToken($_POST["csrf_token"] ?? "")) {
+        Response::json([
+            "success" => false,
+            "message" => "Invalid CSRF token."
+        ], 403);
+    }
+
+    $controller = new DepartmentController($pdo);
+
+    $result = $controller->createDepartment(
+        $_POST["department_name"] ?? "",
+        $_POST["description"] ?? "",
+        $_POST["status"] ?? "Active"
+    );
+
+    if ($result["success"]) {
+        Response::json($result, 201);
+    }
+
+    Response::json($result, 400);
+}
+
+
+// PUT /departments/{id}
+// Also supports POST + X-HTTP-Method-Override: PUT
+if (
+    ($method === "PUT" || $method === "POST")
+    && preg_match("#^/departments/([0-9]+)$#", $path, $matches)
+) {
+
+    if ($method === "POST" && ($_SERVER["HTTP_X_HTTP_METHOD_OVERRIDE"] ?? "") !== "PUT") {
+        // Continue only when this is a real PUT request
+        if ($method !== "PUT") {
+            // This will only be reached for a normal POST
+        }
+    }
+
+    $isPutRequest =
+        $method === "PUT"
+        || (
+            $method === "POST"
+            && strtoupper($_SERVER["HTTP_X_HTTP_METHOD_OVERRIDE"] ?? "") === "PUT"
+        );
+
+    if (!$isPutRequest) {
+        Response::json([
+            "success" => false,
+            "message" => "Invalid request method."
+        ], 405);
+    }
+
+    if (!CsrfMiddleware::validateToken($_POST["csrf_token"] ?? "")) {
+        Response::json([
+            "success" => false,
+            "message" => "Invalid CSRF token."
+        ], 403);
+    }
+
+    $departmentId = (int) $matches[1];
+
+    $controller = new DepartmentController($pdo);
+
+    $result = $controller->updateDepartment(
+        $departmentId,
+        $_POST["department_name"] ?? "",
+        $_POST["description"] ?? "",
+        $_POST["status"] ?? "Active"
+    );
+
+    if ($result["success"]) {
+        Response::json($result);
+    }
+
+    Response::json($result, 400);
+}
+
+if (
+    $method === "DELETE" &&
+    preg_match(
+        "#^/employees/([^/]+)$#",
+        $path,
+        $matches
+    )
+) {
+
+    $employeeId = $matches[1];
+
+    require_once __DIR__ .
+        "/../controllers/EmployeeController.php";
+
+    $controller =
+        new EmployeeController();
+
+    $result =
+        $controller->deactivateEmployee(
+            $employeeId
+        );
+
+    if ($result["success"]) {
+
+        Response::json(
+            $result,
+            200
+        );
+    }
+
+    Response::json(
+        $result,
+        404
     );
 }

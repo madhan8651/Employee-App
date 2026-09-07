@@ -543,4 +543,29 @@ public function countFilteredEmployees(
 
     return $stmt->fetchColumn();
 }
+// =========================
+// DEACTIVATE EMPLOYEE
+// =========================
+
+public function deactivateEmployee($employee_id)
+{
+    $sql = "
+        UPDATE employees
+        SET status = 'Inactive',
+            updated_at = NOW()
+        WHERE employee_id = :employee_id
+    ";
+
+    $stmt = $this->pdo->prepare($sql);
+
+    $stmt->bindValue(
+        ":employee_id",
+        $employee_id,
+        PDO::PARAM_STR
+    );
+
+    $stmt->execute();
+
+    return $stmt->rowCount() > 0;
+}
 }

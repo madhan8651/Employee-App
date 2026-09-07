@@ -24,6 +24,7 @@ RoleMiddleware::check("Admin");
         Admin Dashboard - Employee App
     </title>
 
+
     <!-- Bootstrap 5 -->
 
     <link
@@ -31,31 +32,45 @@ RoleMiddleware::check("Admin");
         rel="stylesheet"
     >
 
+
     <!-- Google Font -->
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
 
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
     >
+
+
+    <!-- Dashboard CSS -->
+
     <link
-    rel="stylesheet"
-    href="../../../public/css/dashboard.css"
->
-<link
-    rel="stylesheet"
-    href="../../../public/css/style.css"
->
+        rel="stylesheet"
+        href="../../../public/css/dashboard.css"
+    >
+
+
+    <!-- Shared CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../../public/css/style.css"
+    >
 
 </head>
 
 
 <body>
 
+
 <div class="dashboard-shell">
 
     <div class="dashboard-card">
+
 
         <!-- Brand -->
 
@@ -80,44 +95,46 @@ RoleMiddleware::check("Admin");
 
         <div class="page-header">
 
-    <div class="header-content">
+            <div class="header-content">
 
-        <span class="eyebrow">
-            Administration
-        </span>
+                <span class="eyebrow">
+                    Administration
+                </span>
 
-        <h2>
-            Admin Dashboard
-        </h2>
+                <h2>
+                    Admin Dashboard
+                </h2>
 
-        <p>
-            Welcome,
-            <strong>
-                <?= htmlspecialchars($_SESSION["name"]) ?>
-            </strong>
-        </p>
+                <p>
+                    Welcome,
+                    <strong>
+                        <?= htmlspecialchars($_SESSION["name"]) ?>
+                    </strong>
+                </p>
 
-        <p>
-            Manage employees and departments from one place.
-        </p>
+                <p>
+                    Manage employees and departments from one place.
+                </p>
+
+            </div>
+
 
             <!-- Add User -->
-<a
-    href="add.php"
-    class="btn btn-add add-user-button"
->
-    + Add User
-</a>
-    </div>
 
-</div>
+            <a
+                href="add.php"
+                class="btn btn-add add-user-button"
+            >
+                + Add User
+            </a>
 
-    
+        </div>
 
 
         <!-- Dashboard Modules -->
 
         <div class="row g-4">
+
 
             <!-- Employee Management -->
 
@@ -159,7 +176,7 @@ RoleMiddleware::check("Admin");
             <div class="col-md-6">
 
                 <a
-                    href="../departments/index.php"
+                    href="departments/index.php"
                     class="dashboard-link"
                 >
 
@@ -174,8 +191,8 @@ RoleMiddleware::check("Admin");
                         </h5>
 
                         <p>
-                            Create and manage departments
-                            and department information.
+                            Add, view, edit, search and
+                            manage department records.
                         </p>
 
                         <div class="module-action">
@@ -194,6 +211,7 @@ RoleMiddleware::check("Admin");
         <!-- Account Actions -->
 
         <div class="account-actions">
+
 
             <!-- Change Password -->
 
@@ -246,6 +264,7 @@ RoleMiddleware::check("Admin");
 
             </a>
 
+
         </div>
 
     </div>
@@ -258,6 +277,7 @@ RoleMiddleware::check("Admin");
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
 </script>
+
 
 </body>
 

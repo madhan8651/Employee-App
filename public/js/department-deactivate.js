@@ -1,13 +1,20 @@
+const API_URL =
+    "/Employee_App/routes/api.php/departments/";
+
+
 const urlParams =
     new URLSearchParams(window.location.search);
 
-const employeeId =
-    (urlParams.get("employee_id") || "").trim();
+
+const departmentId =
+    (urlParams.get("department_id") || "").trim();
+
 
 const deactivateButton =
     document.getElementById("deactivateButton");
 
-const messageBox =
+
+const message =
     document.getElementById("message");
 
 
@@ -22,25 +29,40 @@ function escapeHtml(value)
 }
 
 
+function showMessage(
+    text,
+    success
+)
+{
+    message.innerHTML =
+        `
+        <div class="alert ${success ? "alert-success" : "alert-danger"}">
+            ${escapeHtml(text)}
+        </div>
+        `;
+}
+
+
 deactivateButton.addEventListener(
     "click",
     async function ()
     {
-        if (employeeId === "") {
 
-            messageBox.innerHTML = `
-                <div class="alert alert-danger">
-                    Invalid employee ID.
-                </div>
-            `;
+        if (!departmentId) {
+
+            showMessage(
+                "Invalid department ID.",
+                false
+            );
 
             return;
         }
 
 
-        const confirmed = confirm(
-            "Are you sure you want to deactivate this employee?"
-        );
+        const confirmed =
+            confirm(
+                "Are you sure you want to deactivate this department?"
+            );
 
 
         if (!confirmed) {
@@ -58,11 +80,14 @@ deactivateButton.addEventListener(
 
             const response =
                 await fetch(
-                    "/Employee_App/routes/api.php/employees/" +
-                    encodeURIComponent(employeeId),
+                    API_URL +
+                    encodeURIComponent(departmentId),
                     {
                         method: "DELETE",
-                        credentials: "same-origin"
+                        credentials: "same-origin",
+                        headers: {
+                            "Accept": "application/json"
+                        }
                     }
                 );
 
@@ -82,8 +107,7 @@ deactivateButton.addEventListener(
             } catch (error) {
 
                 throw new Error(
-                    text ||
-                    "Invalid response from Employee API."
+                    "Department API did not return valid JSON."
                 );
             }
 
@@ -92,16 +116,16 @@ deactivateButton.addEventListener(
 
                 throw new Error(
                     result.message ||
-                    "Employee could not be deactivated."
+                    "Unable to deactivate department."
                 );
             }
 
 
-            messageBox.innerHTML = `
-                <div class="alert alert-success">
-                    ${escapeHtml(result.message)}
-                </div>
-            `;
+            showMessage(
+                result.message ||
+                "Department deactivated successfully.",
+                true
+            );
 
 
             setTimeout(
@@ -116,20 +140,18 @@ deactivateButton.addEventListener(
 
         } catch (error) {
 
-            messageBox.innerHTML = `
-                <div class="alert alert-danger">
-                    ${escapeHtml(
-                        error.message ||
-                        "Unable to deactivate employee."
-                    )}
-                </div>
-            `;
+            showMessage(
+                error.message ||
+                "Unable to deactivate department.",
+                false
+            );
 
 
             deactivateButton.disabled = false;
 
             deactivateButton.textContent =
-                "Deactivate Employee";
+                "Deactivate Department";
         }
+
     }
 );
