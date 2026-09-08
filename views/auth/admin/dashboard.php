@@ -46,11 +46,11 @@ RoleMiddleware::check("Admin");
     >
 
 
-    <!-- Dashboard CSS -->
+    <!-- Existing Dashboard CSS -->
 
     <link
         rel="stylesheet"
-        href="../../../public/css/dashboard.css"
+        href="/Employee_App/public/css/dashboard.css?v=2"
     >
 
 
@@ -58,7 +58,15 @@ RoleMiddleware::check("Admin");
 
     <link
         rel="stylesheet"
-        href="../../../public/css/style.css"
+        href="/Employee_App/public/css/style.css"
+    >
+
+
+    <!-- New Dashboard Data CSS -->
+
+    <link
+        rel="stylesheet"
+        href="/Employee_App/public/css/dashboard-data.css?v=2"
     >
 
 </head>
@@ -72,143 +80,243 @@ RoleMiddleware::check("Admin");
     <div class="dashboard-card">
 
 
-        <!-- Brand -->
+        <!-- =========================================
+             Top Navigation
+             ========================================= -->
 
-        <div class="brand">
+        <div class="top-navigation">
 
-            <div class="brand-mark">
-                E
+
+            <!-- Brand -->
+
+            <div class="top-brand">
+
+                <div class="brand-column">
+
+                    <div class="brand-mark">
+                        E
+                    </div>
+
+                </div>
+
+
+                <div class="brand-info">
+
+                    <h1>
+                        Employee App
+                    </h1>
+
+                    <span>
+                        Employee Management System
+                    </span>
+
+                </div>
+
             </div>
 
-            <h1 class="brand-title">
-                Employee App
-            </h1>
 
-            <p class="brand-subtitle">
-                Employee Management System
-            </p>
+            <!-- Management Navigation -->
+
+            <div class="top-actions">
+
+    <a
+        href="../employees/index.php"
+        class="top-nav-button"
+    >
+        👥 Employee Management
+    </a>
+
+
+    <div class="department-nav-group">
+
+        <a
+            href="departments/index.php"
+            class="top-nav-button"
+        >
+            🏢 Department Management
+        </a>
+
+    </div>
+
+</div>
 
         </div>
 
 
-        <!-- Page Header -->
+        <!-- =========================================
+             Dashboard Header
+             ========================================= -->
 
-        <div class="page-header">
+        <!-- Dashboard Header -->
 
-            <div class="header-content">
+<div class="page-header">
 
-                <span class="eyebrow">
-                    Administration
-                </span>
+    <div class="header-content">
 
-                <h2>
-                    Admin Dashboard
-                </h2>
+        <span class="eyebrow">
+            Administration
+        </span>
 
-                <p>
-                    Welcome,
-                    <strong>
-                        <?= htmlspecialchars($_SESSION["name"]) ?>
-                    </strong>
-                </p>
+        <h2>
+            Admin Dashboard
+        </h2>
 
-                <p>
-                    Manage employees and departments from one place.
-                </p>
+        <p>
+            Welcome,
+            <strong>
+                <?= htmlspecialchars($_SESSION["name"]) ?>
+            </strong>
+        </p>
 
-            </div>
+        <p>
+            View system summary and manage employee information.
+        </p>
+
+    </div>
 
 
-            <!-- Add User -->
+    <!-- Add User -->
 
-            <a
-                href="add.php"
-                class="btn btn-add add-user-button"
+    <a
+        href="add.php"
+        class="btn btn-add add-user-button"
+    >
+        + Add User
+    </a>
+
+</div>
+
+
+        <!-- System Overview -->
+
+<div class="summary-section">
+
+    <div class="section-heading">
+
+        <h3>
+            System Overview
+        </h3>
+
+    </div>
+
+
+    <div class="overview-card">
+
+
+        <!-- Total Employees -->
+
+        <div class="overview-stat">
+
+            <span class="overview-label">
+                Total Employees
+            </span>
+
+            <strong
+                id="totalEmployees"
+                class="overview-number"
             >
-                + Add User
-            </a>
+                0
+            </strong>
 
         </div>
 
 
-        <!-- Dashboard Modules -->
+        <!-- Active Employees -->
 
-        <div class="row g-4">
+        <div class="overview-stat">
 
+            <span class="overview-label">
+                Active Employees
+            </span>
 
-            <!-- Employee Management -->
-
-            <div class="col-md-6">
-
-                <a
-                    href="../employees/index.php"
-                    class="dashboard-link"
-                >
-
-                    <div class="module-card">
-
-                        <div class="module-icon">
-                            👥
-                        </div>
-
-                        <h5>
-                            Employee Management
-                        </h5>
-
-                        <p>
-                            Add, view, edit, search and
-                            manage employee records.
-                        </p>
-
-                        <div class="module-action">
-                            Manage Employees →
-                        </div>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-
-            <!-- Department Management -->
-
-            <div class="col-md-6">
-
-                <a
-                    href="departments/index.php"
-                    class="dashboard-link"
-                >
-
-                    <div class="module-card">
-
-                        <div class="module-icon">
-                            🏢
-                        </div>
-
-                        <h5>
-                            Department Management
-                        </h5>
-
-                        <p>
-                            Add, view, edit, search and
-                            manage department records.
-                        </p>
-
-                        <div class="module-action">
-                            Manage Departments →
-                        </div>
-
-                    </div>
-
-                </a>
-
-            </div>
+            <strong
+                id="activeEmployees"
+                class="overview-number"
+            >
+                0
+            </strong>
 
         </div>
 
 
-        <!-- Account Actions -->
+        <!-- Inactive Employees -->
+
+        <div class="overview-stat">
+
+            <span class="overview-label">
+                Inactive Employees
+            </span>
+
+            <strong
+                id="inactiveEmployees"
+                class="overview-number"
+            >
+                0
+            </strong>
+
+        </div>
+
+
+        <!-- Total Departments -->
+
+        <div class="overview-stat">
+
+            <span class="overview-label">
+                Total Departments
+            </span>
+
+            <strong
+                id="totalDepartments"
+                class="overview-number"
+            >
+                0
+            </strong>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+        <!-- =========================================
+             Employees By Department
+             ========================================= -->
+
+        <div class="department-summary-section">
+
+
+            <div class="section-heading">
+
+                <h3>
+                    Employees by Department
+                </h3>
+
+                <p>
+                    Number of employees assigned to each department.
+                </p>
+
+            </div>
+
+
+            <div
+                id="departmentSummaryBody"
+                class="department-summary-list"
+            >
+
+                <div class="loading-message">
+                    Loading department data...
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =========================================
+             Account Actions
+             ========================================= -->
 
         <div class="account-actions">
 
@@ -223,6 +331,7 @@ RoleMiddleware::check("Admin");
                 <div class="account-action-icon">
                     🔑
                 </div>
+
 
                 <div>
 
@@ -250,6 +359,7 @@ RoleMiddleware::check("Admin");
                     ↪
                 </div>
 
+
                 <div>
 
                     <strong>
@@ -267,6 +377,7 @@ RoleMiddleware::check("Admin");
 
         </div>
 
+
     </div>
 
 </div>
@@ -276,6 +387,13 @@ RoleMiddleware::check("Admin");
 
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+<!-- Dashboard JS -->
+
+<script
+    src="/Employee_App/public/js/dashboard.js?v=2">
 </script>
 
 

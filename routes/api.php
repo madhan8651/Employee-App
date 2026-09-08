@@ -2,7 +2,7 @@
 
 require_once __DIR__ . "/../utilities/Response.php";
 require_once __DIR__ . "/../middleware/CsrfMiddleware.php";
-require_once __DIR__ . "/../controllers/DepartmentController.php";
+
 $method = $_SERVER["REQUEST_METHOD"];
 
 $path = parse_url(
@@ -21,6 +21,13 @@ $path = str_replace(
 
 /*
 |--------------------------------------------------------------------------
+| EMPLOYEE API ROUTES
+|--------------------------------------------------------------------------
+*/
+
+
+/*
+|--------------------------------------------------------------------------
 | GET ALL / FILTERED EMPLOYEES
 |--------------------------------------------------------------------------
 */
@@ -32,14 +39,9 @@ if (
 
     require_once __DIR__ . "/../controllers/EmployeeController.php";
 
-    $controller = new EmployeeController();
+    $controller =
+        new EmployeeController();
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | FILTERS
-    |--------------------------------------------------------------------------
-    */
 
     $search =
         trim($_GET["search"] ?? "");
@@ -53,12 +55,6 @@ if (
     $sort =
         $_GET["sort"] ?? "";
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | PAGINATION
-    |--------------------------------------------------------------------------
-    */
 
     $limit = 5;
 
@@ -76,12 +72,6 @@ if (
         ($page - 1) * $limit;
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | COUNT EMPLOYEES
-    |--------------------------------------------------------------------------
-    */
-
     $totalEmployees =
         $controller->countFilteredEmployees(
             $search,
@@ -89,12 +79,6 @@ if (
             $status
         );
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | TOTAL PAGES
-    |--------------------------------------------------------------------------
-    */
 
     $totalPages =
         (int) ceil(
@@ -114,12 +98,6 @@ if (
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET EMPLOYEES
-    |--------------------------------------------------------------------------
-    */
-
     $employees =
         $controller->getFilteredEmployees(
             $search,
@@ -131,18 +109,10 @@ if (
         );
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | JSON RESPONSE
-    |--------------------------------------------------------------------------
-    */
-
     Response::json(
         [
             "success" => true,
-
             "data" => $employees,
-
             "pagination" => [
                 "current_page" => $page,
                 "per_page" => $limit,
@@ -170,16 +140,20 @@ if (
     )
 ) {
 
-    require_once __DIR__ . "/../controllers/EmployeeController.php";
+    require_once __DIR__ .
+        "/../controllers/EmployeeController.php";
 
-    $controller = new EmployeeController();
+    $controller =
+        new EmployeeController();
 
-    $employeeId = $matches[1];
+    $employeeId =
+        $matches[1];
 
     $employee =
         $controller->getEmployeeById(
             $employeeId
         );
+
 
     if (!$employee) {
 
@@ -191,6 +165,7 @@ if (
             404
         );
     }
+
 
     Response::json(
         $employee,
@@ -210,12 +185,6 @@ if (
     $path === "/employees"
 ) {
 
-    /*
-    |--------------------------------------------------------------------------
-    | CSRF VALIDATION
-    |--------------------------------------------------------------------------
-    */
-
     if (
         !CsrfMiddleware::validateToken(
             $_POST["csrf_token"] ?? ""
@@ -232,9 +201,11 @@ if (
     }
 
 
-    require_once __DIR__ . "/../controllers/EmployeeController.php";
+    require_once __DIR__ .
+        "/../controllers/EmployeeController.php";
 
-    $controller = new EmployeeController();
+    $controller =
+        new EmployeeController();
 
 
     $result =
@@ -263,6 +234,7 @@ if (
             201
         );
     }
+
 
     Response::json(
         $result,
@@ -297,14 +269,9 @@ if (
     )
 ) {
 
-    $employeeId = $matches[1];
+    $employeeId =
+        $matches[1];
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | CSRF VALIDATION
-    |--------------------------------------------------------------------------
-    */
 
     if (
         !CsrfMiddleware::validateToken(
@@ -329,13 +296,8 @@ if (
         new EmployeeController();
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | EMPLOYEE DATA
-    |--------------------------------------------------------------------------
-    */
-
     $data = [];
+
 
     $editableFields = [
         "first_name",
@@ -363,24 +325,12 @@ if (
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | UPDATE EMPLOYEE
-    |--------------------------------------------------------------------------
-    */
-
     $result =
         $controller->updateEmployee(
             $employeeId,
             $data
         );
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | RESPONSE
-    |--------------------------------------------------------------------------
-    */
 
     if ($result["success"]) {
 
@@ -389,6 +339,368 @@ if (
             200
         );
     }
+
+
+    Response::json(
+        $result,
+        400
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| DELETE / DEACTIVATE EMPLOYEE
+|--------------------------------------------------------------------------
+*/
+
+if (
+    $method === "DELETE" &&
+    preg_match(
+        "#^/employees/([^/]+)$#",
+        $path,
+        $matches
+    )
+) {
+
+    $employeeId =
+        $matches[1];
+
+
+    require_once __DIR__ .
+        "/../controllers/EmployeeController.php";
+
+    $controller =
+        new EmployeeController();
+
+
+    $result =
+        $controller->deactivateEmployee(
+            $employeeId
+        );
+
+
+    if ($result["success"]) {
+
+        Response::json(
+            $result,
+            200
+        );
+    }
+
+
+    Response::json(
+        $result,
+        404
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| USER API ROUTES
+|--------------------------------------------------------------------------
+*/
+
+
+/*
+|--------------------------------------------------------------------------
+| CREATE USER
+|--------------------------------------------------------------------------
+*/
+
+if (
+    $method === "POST" &&
+    $path === "/users"
+) {
+
+    if (
+        !CsrfMiddleware::validateToken(
+            $_POST["csrf_token"] ?? ""
+        )
+    ) {
+
+        Response::json(
+            [
+                "success" => false,
+                "message" => "Invalid CSRF token."
+            ],
+            403
+        );
+    }
+
+
+    require_once __DIR__ .
+        "/../controllers/UserController.php";
+
+    $controller =
+        new UserController();
+
+
+    $result =
+        $controller->createUser(
+            $_POST["name"] ?? "",
+            $_POST["email"] ?? "",
+            $_POST["username"] ?? "",
+            $_POST["password"] ?? "",
+            $_POST["role"] ?? "",
+            $_POST["status"] ?? ""
+        );
+
+
+    if ($result["success"]) {
+
+        Response::json(
+            $result,
+            201
+        );
+    }
+
+
+    Response::json(
+        $result,
+        400
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| DEPARTMENT API ROUTES
+|--------------------------------------------------------------------------
+*/
+
+
+/*
+|--------------------------------------------------------------------------
+| GET ALL / SEARCH DEPARTMENTS
+|--------------------------------------------------------------------------
+*/
+
+if (
+    $method === "GET" &&
+    $path === "/departments"
+) {
+
+    require_once __DIR__ .
+        "/../controllers/DepartmentController.php";
+
+    $controller =
+        new DepartmentController();
+
+
+    $search =
+        trim($_GET["search"] ?? "");
+
+
+    if ($search !== "") {
+
+        $departments =
+            $controller->searchDepartments(
+                $search
+            );
+
+    } else {
+
+        $departments =
+            $controller->getAllDepartments();
+    }
+
+
+    Response::json(
+        [
+            "success" => true,
+            "data" => $departments
+        ],
+        200
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| GET SINGLE DEPARTMENT
+|--------------------------------------------------------------------------
+*/
+
+if (
+    $method === "GET" &&
+    preg_match(
+        "#^/departments/([0-9]+)$#",
+        $path,
+        $matches
+    )
+) {
+
+    require_once __DIR__ .
+        "/../controllers/DepartmentController.php";
+
+    $controller =
+        new DepartmentController();
+
+
+    $departmentId =
+        (int) $matches[1];
+
+
+    $department =
+        $controller->getDepartmentById(
+            $departmentId
+        );
+
+
+    if (!$department) {
+
+        Response::json(
+            [
+                "success" => false,
+                "message" => "Department not found."
+            ],
+            404
+        );
+    }
+
+
+    Response::json(
+        [
+            "success" => true,
+            "data" => $department
+        ],
+        200
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CREATE DEPARTMENT
+|--------------------------------------------------------------------------
+*/
+
+if (
+    $method === "POST" &&
+    $path === "/departments"
+) {
+
+    if (
+        !CsrfMiddleware::validateToken(
+            $_POST["csrf_token"] ?? ""
+        )
+    ) {
+
+        Response::json(
+            [
+                "success" => false,
+                "message" => "Invalid CSRF token."
+            ],
+            403
+        );
+    }
+
+
+    require_once __DIR__ .
+        "/../controllers/DepartmentController.php";
+
+    $controller =
+        new DepartmentController();
+
+
+    $result =
+        $controller->createDepartment(
+            $_POST["department_name"] ?? "",
+            $_POST["description"] ?? "",
+            $_POST["status"] ?? "Active"
+        );
+
+
+    if ($result["success"]) {
+
+        Response::json(
+            $result,
+            201
+        );
+    }
+
+
+    Response::json(
+        $result,
+        400
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE DEPARTMENT
+|--------------------------------------------------------------------------
+*/
+
+$isDepartmentUpdateRequest =
+    $method === "PUT" ||
+    (
+        $method === "POST" &&
+        isset(
+            $_SERVER["HTTP_X_HTTP_METHOD_OVERRIDE"]
+        ) &&
+        strtoupper(
+            $_SERVER["HTTP_X_HTTP_METHOD_OVERRIDE"]
+        ) === "PUT"
+    );
+
+
+if (
+    $isDepartmentUpdateRequest &&
+    preg_match(
+        "#^/departments/([0-9]+)$#",
+        $path,
+        $matches
+    )
+) {
+
+    if (
+        !CsrfMiddleware::validateToken(
+            $_POST["csrf_token"] ?? ""
+        )
+    ) {
+
+        Response::json(
+            [
+                "success" => false,
+                "message" => "Invalid CSRF token."
+            ],
+            403
+        );
+    }
+
+
+    require_once __DIR__ .
+        "/../controllers/DepartmentController.php";
+
+    $controller =
+        new DepartmentController();
+
+
+    $departmentId =
+        (int) $matches[1];
+
+
+    $result =
+        $controller->updateDepartment(
+            $departmentId,
+            $_POST["department_name"] ?? "",
+            $_POST["description"] ?? "",
+            $_POST["status"] ?? "Active"
+        );
+
+
+    if ($result["success"]) {
+
+        Response::json(
+            $result,
+            200
+        );
+    }
+
 
     Response::json(
         $result,
@@ -412,16 +724,23 @@ if (
     )
 ) {
 
-    $departmentId = (int) $matches[1];
+    require_once __DIR__ .
+        "/../controllers/DepartmentController.php";
 
     $controller =
         new DepartmentController();
+
+
+    $departmentId =
+        (int) $matches[1];
+
 
     $result =
         $controller->deactivateDepartment(
             $departmentId
         );
 
+
     if ($result["success"]) {
 
         Response::json(
@@ -430,253 +749,95 @@ if (
         );
     }
 
+
     Response::json(
         $result,
         400
     );
 }
+
+
 /*
 |--------------------------------------------------------------------------
-| CREATE USER
+| DASHBOARD API ROUTES
+|--------------------------------------------------------------------------
+*/
+
+
+/*
+|--------------------------------------------------------------------------
+| GET DASHBOARD SUMMARY
 |--------------------------------------------------------------------------
 */
 
 if (
-    $method === "POST" &&
-    $path === "/users"
+    $method === "GET" &&
+    $path === "/dashboard/summary"
 ) {
 
-    /*
-    |--------------------------------------------------------------------------
-    | CSRF VALIDATION
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-        !CsrfMiddleware::validateToken(
-            $_POST["csrf_token"] ?? ""
-        )
-    ) {
-
-        Response::json(
-            [
-                "success" => false,
-                "message" => "Invalid CSRF token."
-            ],
-            403
-        );
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | USER CONTROLLER
-    |--------------------------------------------------------------------------
-    */
-
     require_once __DIR__ .
-        "/../controllers/UserController.php";
+        "/../controllers/DashboardController.php";
 
     $controller =
-        new UserController();
+        new DashboardController();
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | CREATE USER
-    |--------------------------------------------------------------------------
-    */
-
-    $result =
-        $controller->createUser(
-            $_POST["name"] ?? "",
-            $_POST["email"] ?? "",
-            $_POST["username"] ?? "",
-            $_POST["password"] ?? "",
-            $_POST["role"] ?? "",
-            $_POST["status"] ?? ""
-        );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | JSON RESPONSE
-    |--------------------------------------------------------------------------
-    */
-
-    if ($result["success"]) {
-
-        Response::json(
-            $result,
-            201
-        );
-    }
+    $summary =
+        $controller->getSummary();
 
 
     Response::json(
-        $result,
-        400
+        [
+            "success" => true,
+            "data" => $summary
+        ],
+        200
     );
 }
-// =========================
-// DEPARTMENT API ROUTES
-// =========================
-
-// GET /departments
-// GET /departments?search=IT
-if ($method === "GET" && $path === "/departments") {
-
-    $controller = new DepartmentController();
-
-    $search = trim($_GET["search"] ?? "");
-
-    if ($search !== "") {
-        $departments = $controller->searchDepartments($search);
-    } else {
-        $departments = $controller->getAllDepartments();
-    }
-
-    Response::json([
-        "success" => true,
-        "data" => $departments
-    ]);
-}
 
 
-// GET /departments/{id}
-if ($method === "GET" && preg_match("#^/departments/([0-9]+)$#", $path, $matches)) {
-
-    $departmentId = (int) $matches[1];
-
-    $controller = new DepartmentController();
-
-    $department = $controller->getDepartmentById($departmentId);
-
-    if (!$department) {
-        Response::json([
-            "success" => false,
-            "message" => "Department not found."
-        ], 404);
-    }
-
-    Response::json([
-        "success" => true,
-        "data" => $department
-    ]);
-}
-
-
-// POST /departments
-if ($method === "POST" && $path === "/departments") {
-
-    if (!CsrfMiddleware::validateToken($_POST["csrf_token"] ?? "")) {
-        Response::json([
-            "success" => false,
-            "message" => "Invalid CSRF token."
-        ], 403);
-    }
-
-    $controller = new DepartmentController($pdo);
-
-    $result = $controller->createDepartment(
-        $_POST["department_name"] ?? "",
-        $_POST["description"] ?? "",
-        $_POST["status"] ?? "Active"
-    );
-
-    if ($result["success"]) {
-        Response::json($result, 201);
-    }
-
-    Response::json($result, 400);
-}
-
-
-// PUT /departments/{id}
-// Also supports POST + X-HTTP-Method-Override: PUT
-if (
-    ($method === "PUT" || $method === "POST")
-    && preg_match("#^/departments/([0-9]+)$#", $path, $matches)
-) {
-
-    if ($method === "POST" && ($_SERVER["HTTP_X_HTTP_METHOD_OVERRIDE"] ?? "") !== "PUT") {
-        // Continue only when this is a real PUT request
-        if ($method !== "PUT") {
-            // This will only be reached for a normal POST
-        }
-    }
-
-    $isPutRequest =
-        $method === "PUT"
-        || (
-            $method === "POST"
-            && strtoupper($_SERVER["HTTP_X_HTTP_METHOD_OVERRIDE"] ?? "") === "PUT"
-        );
-
-    if (!$isPutRequest) {
-        Response::json([
-            "success" => false,
-            "message" => "Invalid request method."
-        ], 405);
-    }
-
-    if (!CsrfMiddleware::validateToken($_POST["csrf_token"] ?? "")) {
-        Response::json([
-            "success" => false,
-            "message" => "Invalid CSRF token."
-        ], 403);
-    }
-
-    $departmentId = (int) $matches[1];
-
-    $controller = new DepartmentController($pdo);
-
-    $result = $controller->updateDepartment(
-        $departmentId,
-        $_POST["department_name"] ?? "",
-        $_POST["description"] ?? "",
-        $_POST["status"] ?? "Active"
-    );
-
-    if ($result["success"]) {
-        Response::json($result);
-    }
-
-    Response::json($result, 400);
-}
+/*
+|--------------------------------------------------------------------------
+| GET EMPLOYEES BY DEPARTMENT
+|--------------------------------------------------------------------------
+*/
 
 if (
-    $method === "DELETE" &&
-    preg_match(
-        "#^/employees/([^/]+)$#",
-        $path,
-        $matches
-    )
+    $method === "GET" &&
+    $path === "/dashboard/employees-by-department"
 ) {
-
-    $employeeId = $matches[1];
 
     require_once __DIR__ .
-        "/../controllers/EmployeeController.php";
+        "/../controllers/DashboardController.php";
 
     $controller =
-        new EmployeeController();
+        new DashboardController();
 
-    $result =
-        $controller->deactivateEmployee(
-            $employeeId
-        );
 
-    if ($result["success"]) {
+    $departments =
+        $controller->getEmployeesByDepartment();
 
-        Response::json(
-            $result,
-            200
-        );
-    }
 
     Response::json(
-        $result,
-        404
+        [
+            "success" => true,
+            "data" => $departments
+        ],
+        200
     );
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| FINAL 404 FALLBACK
+|--------------------------------------------------------------------------
+*/
+
+Response::json(
+    [
+        "success" => false,
+        "message" => "API endpoint not found."
+    ],
+    404
+);
