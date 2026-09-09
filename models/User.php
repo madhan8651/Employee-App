@@ -11,106 +11,166 @@ class User
         $this->pdo = $pdo;
     }
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | FIND USER BY LOGIN
+    |--------------------------------------------------------------------------
+    */
+
     public function findByLogin($login)
-{
-    $sql = "
-        SELECT
-            user_id,
-            name,
-            email,
-            username,
-            password,
-            role,
-            status
-        FROM users
-        WHERE email = :login
-           OR username = :login
-        LIMIT 1
-    ";
+    {
+        $sql = "
+            SELECT
+                user_id,
+                name,
+                email,
+                username,
+                password,
+                role,
+                status
+            FROM users
+            WHERE email = :login
+               OR username = :login
+            LIMIT 1
+        ";
 
-    $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
 
-    $stmt->execute([
-        "login" => $login
-    ]);
+        $stmt->execute([
+            "login" => $login
+        ]);
 
-    return $stmt->fetch();
-}
+        return $stmt->fetch();
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE PASSWORD
+    |--------------------------------------------------------------------------
+    */
+
     public function updatePassword($userId, $newPassword)
-{
-    $sql = "
-        UPDATE users
-        SET password = :password
-        WHERE user_id = :user_id
-    ";
+    {
+        $sql = "
+            UPDATE users
+            SET password = :password
+            WHERE user_id = :user_id
+        ";
 
-    $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
 
-    return $stmt->execute([
-        "password" => $newPassword,
-        "user_id" => $userId
-    ]);
-}
-public function findByUserId($user_id){
-    $sql = "
-        SELECT
-            user_id,
-            name,
-            email,
-            username,
-            password,
-            role,
-            status
-        FROM users
-        WHERE user_id = :user_id
-        LIMIT 1
-    ";
+        return $stmt->execute([
+            "password" => $newPassword,
+            "user_id" => $userId
+        ]);
+    }
 
-    $stmt = $this->pdo->prepare($sql);
 
-    $stmt->execute([
-        "user_id" => $user_id
-    ]);
+    /*
+    |--------------------------------------------------------------------------
+    | FIND USER BY ID
+    |--------------------------------------------------------------------------
+    */
 
-    return $stmt->fetch();
-}
-public function existsByEmailOrUsername($email, $username)
-{
-    $sql = "
-        SELECT user_id
-        FROM users
-        WHERE email = :email
-           OR username = :username
-        LIMIT 1
-    ";
+    public function findByUserId($user_id)
+    {
+        $sql = "
+            SELECT
+                user_id,
+                name,
+                email,
+                username,
+                password,
+                role,
+                status
+            FROM users
+            WHERE user_id = :user_id
+            LIMIT 1
+        ";
 
-    $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
 
-    $stmt->execute([
-        "email" => $email,
-        "username" => $username
-    ]);
+        $stmt->execute([
+            "user_id" => $user_id
+        ]);
 
-    return $stmt->fetch() !== false;
-}
-public function createUser($name, $email, $username, $password, $role, $status)
-{
-    $sql = "
-        INSERT INTO users
-        (name, email, username, password, role, status)
-        VALUES
-        (:name, :email, :username, :password, :role, :status)
-    ";
+        return $stmt->fetch();
+    }
 
-    $stmt = $this->pdo->prepare($sql);
 
-    return $stmt->execute([
-        "name" => $name,
-        "email" => $email,
-        "username" => $username,
-        "password" => $password,
-        "role" => $role,
-        "status" => $status
-    ]);
-}
+    /*
+    |--------------------------------------------------------------------------
+    | CHECK EMAIL OR USERNAME
+    |--------------------------------------------------------------------------
+    */
+
+    public function existsByEmailOrUsername($email, $username)
+    {
+        $sql = "
+            SELECT user_id
+            FROM users
+            WHERE email = :email
+               OR username = :username
+            LIMIT 1
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            "email" => $email,
+            "username" => $username
+        ]);
+
+        return $stmt->fetch() !== false;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE USER
+    |--------------------------------------------------------------------------
+    */
+
+    public function createUser(
+        $name,
+        $email,
+        $username,
+        $password,
+        $role,
+        $status
+    ) {
+        $sql = "
+            INSERT INTO users
+            (
+                name,
+                email,
+                username,
+                password,
+                role,
+                status
+            )
+            VALUES
+            (
+                :name,
+                :email,
+                :username,
+                :password,
+                :role,
+                :status
+            )
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        return $stmt->execute([
+            "name" => $name,
+            "email" => $email,
+            "username" => $username,
+            "password" => $password,
+            "role" => $role,
+            "status" => $status
+        ]);
+    }
 }

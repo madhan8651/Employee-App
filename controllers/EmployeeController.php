@@ -654,4 +654,63 @@ public function deactivateEmployee($employee_id)
         "message" => "Employee could not be deactivated."
     ];
 }
+// =========================
+// GET LOGGED-IN EMPLOYEE
+// =========================
+
+public function getEmployeeByEmail($email)
+{
+    return $this->employeeModel
+        ->getEmployeeByEmail($email);
+}
+// =========================
+// UPDATE LOGGED-IN EMPLOYEE PROFILE
+// =========================
+
+public function updateMyProfile($email, $data)
+{
+    // Find the logged-in employee
+    $employee =
+        $this->employeeModel->getEmployeeByEmail($email);
+
+    if (!$employee) {
+
+        return [
+            "success" => false,
+            "message" => "Employee profile not found."
+        ];
+    }
+
+
+    // Validate allowed profile fields
+    $validation =
+        $this->employeeService->validateProfileUpdate($data);
+
+    if (!$validation["success"]) {
+        return $validation;
+    }
+
+
+    // Update only allowed fields
+    $success =
+        $this->employeeModel->updateEmployee(
+            $employee["employee_id"],
+            $data
+        );
+
+
+    if ($success) {
+
+        return [
+            "success" => true,
+            "message" => "Profile updated successfully."
+        ];
+    }
+
+
+    return [
+        "success" => false,
+        "message" => "No changes were made."
+    ];
+}
 }

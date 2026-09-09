@@ -3,14 +3,18 @@
 require_once __DIR__ . "/../controllers/AuthController.php";
 require_once __DIR__ . "/../middleware/CsrfMiddleware.php";
 
+
 $method = $_SERVER["REQUEST_METHOD"];
+
 
 $path = parse_url(
     $_SERVER["REQUEST_URI"],
     PHP_URL_PATH
 );
 
+
 $basePath = "/Employee_App/routes/auth.php";
+
 
 $path = str_replace(
     $basePath,
@@ -66,7 +70,7 @@ if (
     */
 
     require_once __DIR__ .
-        "/../views/auth/admin/login.php";
+    "/../views/auth/login.php";
 
     exit;
 }
@@ -100,6 +104,7 @@ if (
         $params =
             session_get_cookie_params();
 
+
         setcookie(
             session_name(),
             "",
@@ -121,10 +126,19 @@ if (
 
     exit;
 }
+
+
 /*
 |--------------------------------------------------------------------------
 | CHANGE PASSWORD
 |--------------------------------------------------------------------------
+|
+| Available for:
+| - Admin
+| - Employee
+|
+| Both roles use the same page and same processing.
+|
 */
 
 if (
@@ -142,6 +156,12 @@ if (
 
     if ($method === "POST") {
 
+        /*
+        |--------------------------------------------------------------------------
+        | CSRF VALIDATION
+        |--------------------------------------------------------------------------
+        */
+
         if (
             !CsrfMiddleware::validateToken(
                 $_POST["csrf_token"] ?? ""
@@ -153,15 +173,29 @@ if (
 
         } else {
 
+            /*
+            |--------------------------------------------------------------------------
+            | PASSWORD DATA
+            |--------------------------------------------------------------------------
+            */
+
             $currentPassword =
                 $_POST["current_password"] ?? "";
+
 
             $newPassword =
                 $_POST["new_password"] ?? "";
 
+
             $confirmPassword =
                 $_POST["confirm_password"] ?? "";
 
+
+            /*
+            |--------------------------------------------------------------------------
+            | AUTH CONTROLLER
+            |--------------------------------------------------------------------------
+            */
 
             $auth =
                 new AuthController();
@@ -184,7 +218,7 @@ if (
     */
 
     require_once __DIR__ .
-        "/../views/auth/admin/change-password.php";
+        "/../views/auth/change-password.php";
 
     exit;
 }

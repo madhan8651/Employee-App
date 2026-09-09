@@ -1714,3 +1714,95 @@ textarea.form-control {
         margin-top: 1rem;
     }
 }
+.profile-photo-label {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    background: #4c3fe0;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    transition: 0.2s ease;
+}
+
+.profile-photo-label:hover {
+    opacity: 0.9;
+}
+.change-password-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.change-password-actions .btn-cancel-password,
+.change-password-actions .btn-change-password {
+    flex: 1;
+    width: 50%;
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    margin: 0;
+    padding: 0 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+
+    transition: all 0.2s ease;
+}
+
+/* Cancel */
+.change-password-actions .btn-cancel-password {
+    border: 1px solid #d9d6df;
+    background: #ffffff;
+    color: #3f3a47;
+    text-decoration: none;
+}
+
+.change-password-actions .btn-cancel-password:hover {
+    background: #f7f6f9;
+    color: #2f2a38;
+    border-color: #c9c5d0;
+}
+
+/* Change Password */
+.change-password-actions .btn-change-password {
+    border: none;
+    background: linear-gradient(135deg, #24245f, #4a42df);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(55, 48, 180, 0.15);
+    cursor: pointer;
+}
+
+.change-password-actions .btn-change-password:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(55, 48, 180, 0.20);
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .change-password-actions {
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
+    .change-password-actions .btn-cancel-password,
+    .change-password-actions .btn-change-password {
+        width: 100%;
+        height: 44px;
+        min-height: 44px;
+        max-height: 44px;
+    }
+}

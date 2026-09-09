@@ -113,12 +113,24 @@ if ($page < 1) {
                 Employee Directory
             </div>
 
-            <a
-                href="add.php"
-                class="btn btn-add"
-            >
-                + Add Employee
-            </a>
+            <div class="d-flex gap-2">
+
+                <a
+    href="/Employee_App/views/auth/admin/dashboard.php"
+    class="btn btn-blue btn-back"
+                    style="background-color: #2563EB; border-color: #2563EB; color: #FFFFFF;"
+>
+    ← Back
+</a>
+
+                <a
+                    href="add.php"
+                    class="btn btn-add"
+                >
+                    + Add Employee
+                </a>
+
+            </div>
 
         </div>
 

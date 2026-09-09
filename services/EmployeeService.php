@@ -175,4 +175,89 @@ public function validateStatus($status)
         "success" => true
     ];
 }
+// =========================
+// VALIDATE EMPLOYEE PROFILE UPDATE
+// =========================
+
+public function validateProfileUpdate($data)
+{
+    $allowedFields = [
+        "phone",
+        "address",
+        "profile_photo"
+    ];
+
+
+    foreach ($data as $field => $value) {
+
+        if (!in_array($field, $allowedFields)) {
+
+            return [
+                "success" => false,
+                "message" =>
+                    "You are not allowed to update this field."
+            ];
+        }
+    }
+
+
+    // Validate phone if provided
+    if (isset($data["phone"])) {
+
+        $phoneValidation =
+            $this->validatePhone(
+                $data["phone"]
+            );
+
+        if (!$phoneValidation["success"]) {
+            return $phoneValidation;
+        }
+    }
+
+
+    // Validate address if provided
+    if (isset($data["address"])) {
+
+        if (trim($data["address"]) === "") {
+
+            return [
+                "success" => false,
+                "message" =>
+                    "Address cannot be empty."
+            ];
+        }
+    }
+
+
+    // Profile photo filename check
+    if (isset($data["profile_photo"])) {
+
+        if (
+            !is_string($data["profile_photo"]) ||
+            trim($data["profile_photo"]) === ""
+        ) {
+
+            return [
+                "success" => false,
+                "message" =>
+                    "Invalid profile photo."
+            ];
+        }
+    }
+
+
+    if (empty($data)) {
+
+        return [
+            "success" => false,
+            "message" =>
+                "No profile changes were provided."
+        ];
+    }
+
+
+    return [
+        "success" => true
+    ];
+}
 }

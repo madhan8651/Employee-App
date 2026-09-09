@@ -1,11 +1,14 @@
 <?php
 
-require_once __DIR__ . "/../../../middleware/AuthMiddleware.php";
 require_once __DIR__ . "/../../../middleware/CsrfMiddleware.php";
 require_once __DIR__ . "/../../../models/Department.php";
 require_once __DIR__ . "/../../../config/database.php";
+require_once __DIR__ . "/../../../middleware/AuthMiddleware.php";
+require_once __DIR__ . "/../../../middleware/RoleMiddleware.php";
 
 AuthMiddleware::check();
+RoleMiddleware::check("Admin");
+
 
 $csrfToken = CsrfMiddleware::generateToken();
 

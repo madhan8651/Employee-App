@@ -11,6 +11,11 @@ class Employee
         $this->pdo = $pdo;
     }
 
+
+    // =========================
+    // CREATE EMPLOYEE
+    // =========================
+
     public function createEmployee(
         $employee_id,
         $first_name,
@@ -27,6 +32,37 @@ class Employee
         $profile_photo,
         $status
     ) {
+
+        /*
+        |--------------------------------------------------------------------------
+        | GET DEPARTMENT NAME
+        |--------------------------------------------------------------------------
+        */
+
+        $departmentSql = "
+            SELECT department_name
+            FROM departments
+            WHERE department_id = :department_id
+            LIMIT 1
+        ";
+
+        $departmentStmt =
+            $this->pdo->prepare($departmentSql);
+
+        $departmentStmt->execute([
+            "department_id" => $department_id
+        ]);
+
+        $department =
+            $departmentStmt->fetchColumn();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | EMPLOYEE INSERT
+        |--------------------------------------------------------------------------
+        */
+
         $sql = "
             INSERT INTO employees
             (
@@ -39,6 +75,7 @@ class Employee
                 gender,
                 date_of_joining,
                 department_id,
+                department,
                 designation,
                 salary,
                 address,
@@ -56,6 +93,7 @@ class Employee
                 :gender,
                 :date_of_joining,
                 :department_id,
+                :department,
                 :designation,
                 :salary,
                 :address,
@@ -64,28 +102,68 @@ class Employee
             )
         ";
 
-        $stmt = $this->pdo->prepare($sql);
+        $stmt =
+            $this->pdo->prepare($sql);
 
         return $stmt->execute([
-            "employee_id" => $employee_id,
-            "first_name" => $first_name,
-            "last_name" => $last_name,
-            "email" => $email,
-            "phone" => $phone,
-            "date_of_birth" => $date_of_birth,
-            "gender" => $gender,
-            "date_of_joining" => $date_of_joining,
-            "department_id" => $department_id,
-            "designation" => $designation,
-            "salary" => $salary,
-            "address" => $address,
-            "profile_photo" => $profile_photo,
-            "status" => $status
+
+            "employee_id" =>
+                $employee_id,
+
+            "first_name" =>
+                $first_name,
+
+            "last_name" =>
+                $last_name,
+
+            "email" =>
+                $email,
+
+            "phone" =>
+                $phone,
+
+            "date_of_birth" =>
+                $date_of_birth,
+
+            "gender" =>
+                $gender,
+
+            "date_of_joining" =>
+                $date_of_joining,
+
+            "department_id" =>
+                $department_id,
+
+            "department" =>
+                $department,
+
+            "designation" =>
+                $designation,
+
+            "salary" =>
+                $salary,
+
+            "address" =>
+                $address,
+
+            "profile_photo" =>
+                $profile_photo,
+
+            "status" =>
+                $status
         ]);
     }
 
-    public function existsByEmployeeIdOrEmail($employee_id, $email)
-    {
+
+    // =========================
+    // CHECK EMPLOYEE
+    // =========================
+
+    public function existsByEmployeeIdOrEmail(
+        $employee_id,
+        $email
+    ) {
+
         $sql = "
             SELECT employee_id, email
             FROM employees
@@ -94,15 +172,24 @@ class Employee
             LIMIT 1
         ";
 
-        $stmt = $this->pdo->prepare($sql);
+        $stmt =
+            $this->pdo->prepare($sql);
 
         $stmt->execute([
-            "employee_id" => $employee_id,
-            "email" => $email
+            "employee_id" =>
+                $employee_id,
+
+            "email" =>
+                $email
         ]);
 
         return $stmt->fetch();
     }
+
+
+    // =========================
+    // GET ALL EMPLOYEES
+    // =========================
 
     public function getAllEmployees()
     {
@@ -116,6 +203,7 @@ class Employee
                 e.designation,
                 e.salary,
                 e.status,
+                e.department,
                 d.department_name
             FROM employees e
             LEFT JOIN departments d
@@ -123,165 +211,234 @@ class Employee
             ORDER BY e.employee_id
         ";
 
-        $stmt = $this->pdo->prepare($sql);
+        $stmt =
+            $this->pdo->prepare($sql);
+
         $stmt->execute();
 
         return $stmt->fetchAll();
     }
+
+
+    // =========================
+    // SEARCH EMPLOYEES
+    // =========================
+
     public function searchEmployees($search)
-{
-    $sql = "
-        SELECT
-            e.employee_id,
-            e.first_name,
-            e.last_name,
-            e.email,
-            e.phone,
-            e.designation,
-            e.salary,
-            e.status,
-            d.department_name
-        FROM employees e
-        LEFT JOIN departments d
-            ON e.department_id = d.department_id
-        WHERE
-            e.employee_id LIKE :search
-            OR e.first_name LIKE :search
-            OR e.last_name LIKE :search
-            OR CONCAT(e.first_name, ' ', e.last_name) LIKE :search
-            OR e.email LIKE :search
-            OR e.phone LIKE :search
-        ORDER BY e.employee_id
-    ";
+    {
+        $sql = "
+            SELECT
+                e.employee_id,
+                e.first_name,
+                e.last_name,
+                e.email,
+                e.phone,
+                e.designation,
+                e.salary,
+                e.status,
+                e.department,
+                d.department_name
+            FROM employees e
+            LEFT JOIN departments d
+                ON e.department_id = d.department_id
+            WHERE
+                e.employee_id LIKE :search
+                OR e.first_name LIKE :search
+                OR e.last_name LIKE :search
+                OR CONCAT(e.first_name, ' ', e.last_name) LIKE :search
+                OR e.email LIKE :search
+                OR e.phone LIKE :search
+            ORDER BY e.employee_id
+        ";
 
-    $stmt = $this->pdo->prepare($sql);
+        $stmt =
+            $this->pdo->prepare($sql);
 
-    $searchValue = "%" . trim($search) . "%";
+        $searchValue =
+            "%" . trim($search) . "%";
 
-    $stmt->execute([
-        "search" => $searchValue
-    ]);
+        $stmt->execute([
+            "search" =>
+                $searchValue
+        ]);
 
-    return $stmt->fetchAll();
-}
-public function getEmployeesPaginated($limit, $offset)
-{
-    $sql = "
-        SELECT
-            e.employee_id,
-            e.first_name,
-            e.last_name,
-            e.email,
-            e.phone,
-            e.designation,
-            e.salary,
-            e.status,
-            d.department_name
-        FROM employees e
-        LEFT JOIN departments d
-            ON e.department_id = d.department_id
-        ORDER BY e.employee_id
-        LIMIT :limit OFFSET :offset
-    ";
+        return $stmt->fetchAll();
+    }
 
-    $stmt = $this->pdo->prepare($sql);
 
-    $stmt->bindValue(":limit", (int) $limit, PDO::PARAM_INT);
-    $stmt->bindValue(":offset", (int) $offset, PDO::PARAM_INT);
+    // =========================
+    // GET PAGINATED EMPLOYEES
+    // =========================
 
-    $stmt->execute();
+    public function getEmployeesPaginated(
+        $limit,
+        $offset
+    ) {
 
-    return $stmt->fetchAll();
-}
-public function getEmployeesByDepartment($department_id)
-{
-    $sql = "
-        SELECT
-            e.employee_id,
-            e.first_name,
-            e.last_name,
-            e.email,
-            e.phone,
-            e.designation,
-            e.salary,
-            e.status,
-            d.department_name
-        FROM employees e
-        LEFT JOIN departments d
-            ON e.department_id = d.department_id
-        WHERE e.department_id = :department_id
-        ORDER BY e.employee_id
-    ";
+        $sql = "
+            SELECT
+                e.employee_id,
+                e.first_name,
+                e.last_name,
+                e.email,
+                e.phone,
+                e.designation,
+                e.salary,
+                e.status,
+                e.department,
+                d.department_name
+            FROM employees e
+            LEFT JOIN departments d
+                ON e.department_id = d.department_id
+            ORDER BY e.employee_id
+            LIMIT :limit OFFSET :offset
+        ";
 
-    $stmt = $this->pdo->prepare($sql);
+        $stmt =
+            $this->pdo->prepare($sql);
 
-    $stmt->execute([
-        "department_id" => $department_id
-    ]);
+        $stmt->bindValue(
+            ":limit",
+            (int) $limit,
+            PDO::PARAM_INT
+        );
 
-    return $stmt->fetchAll();
-}
-public function getEmployeesByStatus($status)
-{
-    $sql = "
-        SELECT
-            e.employee_id,
-            e.first_name,
-            e.last_name,
-            e.email,
-            e.phone,
-            e.designation,
-            e.salary,
-            e.status,
-            d.department_name
-        FROM employees e
-        LEFT JOIN departments d
-            ON e.department_id = d.department_id
-        WHERE e.status = :status
-        ORDER BY e.employee_id
-    ";
+        $stmt->bindValue(
+            ":offset",
+            (int) $offset,
+            PDO::PARAM_INT
+        );
 
-    $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
 
-    $stmt->execute([
-        "status" => $status
-    ]);
+        return $stmt->fetchAll();
+    }
 
-    return $stmt->fetchAll();
-}
-public function getEmployeesSorted($sort)
-{
-    $allowedSorts = [
-        "employee_id" => "e.employee_id",
-        "name"        => "e.first_name",
-        "department"  => "d.department_name",
-        "salary"      => "e.salary"
-    ];
 
-    $sortColumn = $allowedSorts[$sort] ?? "e.employee_id";
+    // =========================
+    // GET EMPLOYEES BY DEPARTMENT
+    // =========================
 
-    $sql = "
-        SELECT
-            e.employee_id,
-            e.first_name,
-            e.last_name,
-            e.email,
-            e.phone,
-            e.designation,
-            e.salary,
-            e.status,
-            d.department_name
-        FROM employees e
-        LEFT JOIN departments d
-            ON e.department_id = d.department_id
-        ORDER BY $sortColumn
-    ";
+    public function getEmployeesByDepartment(
+        $department_id
+    ) {
 
-    $stmt = $this->pdo->prepare($sql);
-    $stmt->execute();
+        $sql = "
+            SELECT
+                e.employee_id,
+                e.first_name,
+                e.last_name,
+                e.email,
+                e.phone,
+                e.designation,
+                e.salary,
+                e.status,
+                e.department,
+                d.department_name
+            FROM employees e
+            LEFT JOIN departments d
+                ON e.department_id = d.department_id
+            WHERE e.department_id = :department_id
+            ORDER BY e.employee_id
+        ";
 
-    return $stmt->fetchAll();
-}
+        $stmt =
+            $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            "department_id" =>
+                $department_id
+        ]);
+
+        return $stmt->fetchAll();
+    }
+
+
+    // =========================
+    // GET EMPLOYEES BY STATUS
+    // =========================
+
+    public function getEmployeesByStatus($status)
+    {
+        $sql = "
+            SELECT
+                e.employee_id,
+                e.first_name,
+                e.last_name,
+                e.email,
+                e.phone,
+                e.designation,
+                e.salary,
+                e.status,
+                e.department,
+                d.department_name
+            FROM employees e
+            LEFT JOIN departments d
+                ON e.department_id = d.department_id
+            WHERE e.status = :status
+            ORDER BY e.employee_id
+        ";
+
+        $stmt =
+            $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            "status" =>
+                $status
+        ]);
+
+        return $stmt->fetchAll();
+    }
+
+
+    // =========================
+    // GET EMPLOYEES SORTED
+    // =========================
+
+    public function getEmployeesSorted($sort)
+    {
+        $allowedSorts = [
+            "employee_id" => "e.employee_id",
+            "name"        => "e.first_name",
+            "department"  => "e.department",
+            "salary"      => "e.salary"
+        ];
+
+        $sortColumn =
+            $allowedSorts[$sort]
+            ?? "e.employee_id";
+
+
+        $sql = "
+            SELECT
+                e.employee_id,
+                e.first_name,
+                e.last_name,
+                e.email,
+                e.phone,
+                e.designation,
+                e.salary,
+                e.status,
+                e.department,
+                d.department_name
+            FROM employees e
+            LEFT JOIN departments d
+                ON e.department_id = d.department_id
+            ORDER BY $sortColumn
+        ";
+
+        $stmt =
+            $this->pdo->prepare($sql);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+
+    // =========================
+    // GET EMPLOYEE BY ID
+    // =========================
 
     public function getEmployeeById($employee_id)
     {
@@ -296,27 +453,82 @@ public function getEmployeesSorted($sort)
                 gender,
                 date_of_joining,
                 department_id,
+                department,
                 designation,
                 salary,
                 address,
                 profile_photo,
-                status
+                status,
+                created_at,
+                updated_at
             FROM employees
             WHERE employee_id = :employee_id
             LIMIT 1
         ";
 
-        $stmt = $this->pdo->prepare($sql);
+        $stmt =
+            $this->pdo->prepare($sql);
 
         $stmt->execute([
-            "employee_id" => $employee_id
+            "employee_id" =>
+                $employee_id
         ]);
 
         return $stmt->fetch();
     }
 
-    public function updateEmployee($employee_id, $data)
+
+    // =========================
+    // GET EMPLOYEE BY EMAIL
+    // =========================
+
+    public function getEmployeeByEmail($email)
     {
+        $sql = "
+            SELECT
+                employee_id,
+                first_name,
+                last_name,
+                email,
+                phone,
+                date_of_birth,
+                gender,
+                date_of_joining,
+                department_id,
+                department,
+                designation,
+                salary,
+                address,
+                profile_photo,
+                status,
+                created_at,
+                updated_at
+            FROM employees
+            WHERE email = :email
+            LIMIT 1
+        ";
+
+        $stmt =
+            $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            "email" =>
+                $email
+        ]);
+
+        return $stmt->fetch();
+    }
+
+
+    // =========================
+    // UPDATE EMPLOYEE
+    // =========================
+
+    public function updateEmployee(
+        $employee_id,
+        $data
+    ) {
+
         $allowedFields = [
             "first_name",
             "last_name",
@@ -326,6 +538,7 @@ public function getEmployeesSorted($sort)
             "gender",
             "date_of_joining",
             "department_id",
+            "department",
             "designation",
             "salary",
             "address",
@@ -333,239 +546,316 @@ public function getEmployeesSorted($sort)
             "profile_photo"
         ];
 
+
         $fields = [];
 
+
         $values = [
-            "employee_id" => $employee_id
+            "employee_id" =>
+                $employee_id
         ];
+
 
         foreach ($data as $column => $value) {
 
-            if (!in_array($column, $allowedFields)) {
+            if (
+                !in_array(
+                    $column,
+                    $allowedFields
+                )
+            ) {
                 continue;
             }
 
-            $fields[] = "$column = :$column";
 
-            $values[$column] = $value;
+            $fields[] =
+                "$column = :$column";
+
+
+            $values[$column] =
+                $value;
         }
+
 
         if (empty($fields)) {
             return false;
         }
 
+
         $sql = "
             UPDATE employees
-            SET " . implode(", ", $fields) . ",
+            SET " .
+            implode(
+                ", ",
+                $fields
+            ) . ",
                 updated_at = NOW()
             WHERE employee_id = :employee_id
         ";
 
-        $stmt = $this->pdo->prepare($sql);
 
-        return $stmt->execute($values);
-    }
-    // =========================
-// GET FILTERED EMPLOYEES WITH PAGINATION
-// =========================
+        $stmt =
+            $this->pdo->prepare($sql);
 
-public function getFilteredEmployees(
-    $search,
-    $department_id,
-    $status,
-    $sort,
-    $limit,
-    $offset
-) {
-    $sql = "
-        SELECT
-            e.employee_id,
-            e.first_name,
-            e.last_name,
-            e.email,
-            e.phone,
-            e.designation,
-            e.salary,
-            e.status,
-            d.department_name
-        FROM employees e
-        LEFT JOIN departments d
-            ON e.department_id = d.department_id
-        WHERE 1=1
-    ";
-
-    $params = [];
-
-
-    // Search
-    if ($search !== "") {
-
-        $sql .= "
-            AND (
-                e.employee_id LIKE :search
-                OR e.first_name LIKE :search
-                OR e.last_name LIKE :search
-                OR CONCAT(e.first_name, ' ', e.last_name) LIKE :search
-                OR e.email LIKE :search
-                OR e.phone LIKE :search
-            )
-        ";
-
-        $params["search"] = "%" . trim($search) . "%";
-    }
-
-
-    // Department
-    if ($department_id !== "") {
-
-        $sql .= "
-            AND e.department_id = :department_id
-        ";
-
-        $params["department_id"] = $department_id;
-    }
-
-
-    // Status
-    if ($status !== "") {
-
-        $sql .= "
-            AND e.status = :status
-        ";
-
-        $params["status"] = $status;
-    }
-
-
-    // Sorting
-    $allowedSorts = [
-        "employee_id" => "e.employee_id",
-        "name"        => "e.first_name",
-        "salary"      => "e.salary"
-    ];
-
-    $sortColumn = $allowedSorts[$sort] ?? "e.employee_id";
-
-    $sql .= "
-        ORDER BY $sortColumn
-        LIMIT :limit OFFSET :offset
-    ";
-
-
-    $stmt = $this->pdo->prepare($sql);
-
-
-    foreach ($params as $key => $value) {
-        $stmt->bindValue(
-            ":" . $key,
-            $value
+        return $stmt->execute(
+            $values
         );
     }
 
-    $stmt->bindValue(
-        ":limit",
-        (int) $limit,
-        PDO::PARAM_INT
-    );
 
-    $stmt->bindValue(
-        ":offset",
-        (int) $offset,
-        PDO::PARAM_INT
-    );
+    // =========================
+    // GET FILTERED EMPLOYEES
+    // =========================
 
+    public function getFilteredEmployees(
+        $search,
+        $department_id,
+        $status,
+        $sort,
+        $limit,
+        $offset
+    ) {
 
-    $stmt->execute();
-
-    return $stmt->fetchAll();
-}
-// =========================
-// COUNT FILTERED EMPLOYEES
-// =========================
-
-public function countFilteredEmployees(
-    $search,
-    $department_id,
-    $status
-) {
-    $sql = "
-        SELECT COUNT(*)
-        FROM employees e
-        WHERE 1=1
-    ";
-
-    $params = [];
-
-
-    // Search
-    if ($search !== "") {
-
-        $sql .= "
-            AND (
-                e.employee_id LIKE :search
-                OR e.first_name LIKE :search
-                OR e.last_name LIKE :search
-                OR CONCAT(e.first_name, ' ', e.last_name) LIKE :search
-                OR e.email LIKE :search
-                OR e.phone LIKE :search
-            )
+        $sql = "
+            SELECT
+                e.employee_id,
+                e.first_name,
+                e.last_name,
+                e.email,
+                e.phone,
+                e.designation,
+                e.salary,
+                e.status,
+                e.department,
+                d.department_name
+            FROM employees e
+            LEFT JOIN departments d
+                ON e.department_id = d.department_id
+            WHERE 1=1
         ";
 
-        $params["search"] = "%" . trim($search) . "%";
+
+        $params = [];
+
+
+        // Search
+
+        if ($search !== "") {
+
+            $sql .= "
+                AND (
+                    e.employee_id LIKE :search
+                    OR e.first_name LIKE :search
+                    OR e.last_name LIKE :search
+                    OR CONCAT(
+                        e.first_name,
+                        ' ',
+                        e.last_name
+                    ) LIKE :search
+                    OR e.email LIKE :search
+                    OR e.phone LIKE :search
+                    OR e.department LIKE :search
+                )
+            ";
+
+            $params["search"] =
+                "%" . trim($search) . "%";
+        }
+
+
+        // Department
+
+        if ($department_id !== "") {
+
+            $sql .= "
+                AND e.department_id = :department_id
+            ";
+
+            $params["department_id"] =
+                $department_id;
+        }
+
+
+        // Status
+
+        if ($status !== "") {
+
+            $sql .= "
+                AND e.status = :status
+            ";
+
+            $params["status"] =
+                $status;
+        }
+
+
+        // Sorting
+
+        $allowedSorts = [
+            "employee_id" => "e.employee_id",
+            "name"        => "e.first_name",
+            "department"  => "e.department",
+            "salary"      => "e.salary"
+        ];
+
+
+        $sortColumn =
+            $allowedSorts[$sort]
+            ?? "e.employee_id";
+
+
+        $sql .= "
+            ORDER BY $sortColumn
+            LIMIT :limit OFFSET :offset
+        ";
+
+
+        $stmt =
+            $this->pdo->prepare($sql);
+
+
+        foreach (
+            $params as $key => $value
+        ) {
+
+            $stmt->bindValue(
+                ":" . $key,
+                $value
+            );
+        }
+
+
+        $stmt->bindValue(
+            ":limit",
+            (int) $limit,
+            PDO::PARAM_INT
+        );
+
+
+        $stmt->bindValue(
+            ":offset",
+            (int) $offset,
+            PDO::PARAM_INT
+        );
+
+
+        $stmt->execute();
+
+        return $stmt->fetchAll();
     }
 
 
-    // Department
-    if ($department_id !== "") {
+    // =========================
+    // COUNT FILTERED EMPLOYEES
+    // =========================
 
-        $sql .= "
-            AND e.department_id = :department_id
+    public function countFilteredEmployees(
+        $search,
+        $department_id,
+        $status
+    ) {
+
+        $sql = "
+            SELECT COUNT(*)
+            FROM employees e
+            WHERE 1=1
         ";
 
-        $params["department_id"] = $department_id;
+
+        $params = [];
+
+
+        // Search
+
+        if ($search !== "") {
+
+            $sql .= "
+                AND (
+                    e.employee_id LIKE :search
+                    OR e.first_name LIKE :search
+                    OR e.last_name LIKE :search
+                    OR CONCAT(
+                        e.first_name,
+                        ' ',
+                        e.last_name
+                    ) LIKE :search
+                    OR e.email LIKE :search
+                    OR e.phone LIKE :search
+                    OR e.department LIKE :search
+                )
+            ";
+
+            $params["search"] =
+                "%" . trim($search) . "%";
+        }
+
+
+        // Department
+
+        if ($department_id !== "") {
+
+            $sql .= "
+                AND e.department_id = :department_id
+            ";
+
+            $params["department_id"] =
+                $department_id;
+        }
+
+
+        // Status
+
+        if ($status !== "") {
+
+            $sql .= "
+                AND e.status = :status
+            ";
+
+            $params["status"] =
+                $status;
+        }
+
+
+        $stmt =
+            $this->pdo->prepare($sql);
+
+        $stmt->execute(
+            $params
+        );
+
+        return $stmt->fetchColumn();
     }
 
 
-    // Status
-    if ($status !== "") {
+    // =========================
+    // DEACTIVATE EMPLOYEE
+    // =========================
 
-        $sql .= "
-            AND e.status = :status
+    public function deactivateEmployee(
+        $employee_id
+    ) {
+
+        $sql = "
+            UPDATE employees
+            SET status = 'Inactive',
+                updated_at = NOW()
+            WHERE employee_id = :employee_id
         ";
 
-        $params["status"] = $status;
+
+        $stmt =
+            $this->pdo->prepare($sql);
+
+
+        $stmt->bindValue(
+            ":employee_id",
+            $employee_id,
+            PDO::PARAM_STR
+        );
+
+
+        $stmt->execute();
+
+        return $stmt->rowCount() > 0;
     }
-
-
-    $stmt = $this->pdo->prepare($sql);
-
-    $stmt->execute($params);
-
-    return $stmt->fetchColumn();
-}
-// =========================
-// DEACTIVATE EMPLOYEE
-// =========================
-
-public function deactivateEmployee($employee_id)
-{
-    $sql = "
-        UPDATE employees
-        SET status = 'Inactive',
-            updated_at = NOW()
-        WHERE employee_id = :employee_id
-    ";
-
-    $stmt = $this->pdo->prepare($sql);
-
-    $stmt->bindValue(
-        ":employee_id",
-        $employee_id,
-        PDO::PARAM_STR
-    );
-
-    $stmt->execute();
-
-    return $stmt->rowCount() > 0;
-}
 }

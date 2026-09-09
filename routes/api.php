@@ -2,6 +2,9 @@
 
 require_once __DIR__ . "/../utilities/Response.php";
 require_once __DIR__ . "/../middleware/CsrfMiddleware.php";
+require_once __DIR__ . "/../middleware/AuthMiddleware.php";
+require_once __DIR__ . "/../middleware/RoleMiddleware.php";
+
 
 $method = $_SERVER["REQUEST_METHOD"];
 
@@ -10,7 +13,9 @@ $path = parse_url(
     PHP_URL_PATH
 );
 
+
 $basePath = "/Employee_App/routes/api.php";
+
 
 $path = str_replace(
     $basePath,
@@ -37,14 +42,17 @@ if (
     $path === "/employees"
 ) {
 
+    AuthMiddleware::check();
+    RoleMiddleware::check("Admin");
+
     require_once __DIR__ . "/../controllers/EmployeeController.php";
 
-    $controller =
-        new EmployeeController();
+    $controller = new EmployeeController();
 
 
-    $search =
-        trim($_GET["search"] ?? "");
+    $search = trim(
+        $_GET["search"] ?? ""
+    );
 
     $departmentId =
         $_GET["department_id"] ?? "";
@@ -62,6 +70,7 @@ if (
         isset($_GET["page"])
             ? (int) $_GET["page"]
             : 1;
+
 
     if ($page < 1) {
         $page = 1;
@@ -122,6 +131,83 @@ if (
         ],
         200
     );
+
+    exit;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| GET LOGGED-IN EMPLOYEE PROFILE
+|--------------------------------------------------------------------------
+|
+| IMPORTANT:
+| This route MUST come before /employees/{employee_id}
+|
+*/
+
+if (
+    $method === "GET" &&
+    $path === "/employees/profile"
+) {
+
+    AuthMiddleware::check();
+    RoleMiddleware::check("Employee");
+
+
+    if (empty($_SESSION["email"])) {
+
+        Response::json(
+            [
+                "success" => false,
+                "message" =>
+                    "Employee email not found in session."
+            ],
+            401
+        );
+
+        exit;
+    }
+
+
+    require_once __DIR__ .
+        "/../controllers/EmployeeController.php";
+
+
+    $controller =
+        new EmployeeController();
+
+
+    $employee =
+        $controller->getEmployeeByEmail(
+            $_SESSION["email"]
+        );
+
+
+    if (!$employee) {
+
+        Response::json(
+            [
+                "success" => false,
+                "message" =>
+                    "Employee profile not found."
+            ],
+            404
+        );
+
+        exit;
+    }
+
+
+    Response::json(
+        [
+            "success" => true,
+            "data" => $employee
+        ],
+        200
+    );
+
+    exit;
 }
 
 
@@ -140,14 +226,21 @@ if (
     )
 ) {
 
+    AuthMiddleware::check();
+    RoleMiddleware::check("Admin");
+
+
     require_once __DIR__ .
         "/../controllers/EmployeeController.php";
+
 
     $controller =
         new EmployeeController();
 
+
     $employeeId =
         $matches[1];
+
 
     $employee =
         $controller->getEmployeeById(
@@ -160,10 +253,13 @@ if (
         Response::json(
             [
                 "success" => false,
-                "message" => "Employee not found."
+                "message" =>
+                    "Employee not found."
             ],
             404
         );
+
+        exit;
     }
 
 
@@ -171,6 +267,8 @@ if (
         $employee,
         200
     );
+
+    exit;
 }
 
 
@@ -185,6 +283,10 @@ if (
     $path === "/employees"
 ) {
 
+    AuthMiddleware::check();
+    RoleMiddleware::check("Admin");
+
+
     if (
         !CsrfMiddleware::validateToken(
             $_POST["csrf_token"] ?? ""
@@ -198,11 +300,14 @@ if (
             ],
             403
         );
+
+        exit;
     }
 
 
     require_once __DIR__ .
         "/../controllers/EmployeeController.php";
+
 
     $controller =
         new EmployeeController();
@@ -233,6 +338,8 @@ if (
             $result,
             201
         );
+
+        exit;
     }
 
 
@@ -240,6 +347,163 @@ if (
         $result,
         400
     );
+
+    exit;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE LOGGED-IN EMPLOYEE PROFILE
+|--------------------------------------------------------------------------
+|
+| POST /employees/profile
+|
+| Allowed fields:
+| - phone
+| - address
+| - profile_photo
+|
+*/
+
+if (
+    $method === "POST" &&
+    $path === "/employees/profile"
+) {
+
+    AuthMiddleware::check();
+    RoleMiddleware::check("Employee");
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SESSION EMAIL
+    |--------------------------------------------------------------------------
+    */
+
+    if (empty($_SESSION["email"])) {
+
+        Response::json(
+            [
+                "success" => false,
+                "message" =>
+                    "Employee email not found in session."
+            ],
+            401
+        );
+
+        exit;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CSRF VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        !CsrfMiddleware::validateToken(
+            $_POST["csrf_token"] ?? ""
+        )
+    ) {
+
+        Response::json(
+            [
+                "success" => false,
+                "message" =>
+                    "Invalid CSRF token."
+            ],
+            403
+        );
+
+        exit;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFILE DATA
+    |--------------------------------------------------------------------------
+    */
+
+    $profileData = [];
+
+
+    if (isset($_POST["phone"])) {
+
+        $profileData["phone"] =
+            trim($_POST["phone"]);
+    }
+
+
+    if (isset($_POST["address"])) {
+
+        $profileData["address"] =
+            trim($_POST["address"]);
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFILE PHOTO
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        isset($_FILES["profile_photo"]) &&
+        $_FILES["profile_photo"]["error"] !== UPLOAD_ERR_NO_FILE
+    ) {
+
+        $profileData["profile_photo"] =
+            $_FILES["profile_photo"];
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONTROLLER
+    |--------------------------------------------------------------------------
+    */
+
+    require_once __DIR__ .
+        "/../controllers/EmployeeController.php";
+
+
+    $controller =
+        new EmployeeController();
+
+
+    $result =
+        $controller->updateMyProfile(
+            $_SESSION["email"],
+            $profileData
+        );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESPONSE
+    |--------------------------------------------------------------------------
+    */
+
+    if ($result["success"]) {
+
+        Response::json(
+            $result,
+            200
+        );
+
+        exit;
+    }
+
+
+    Response::json(
+        $result,
+        400
+    );
+
+    exit;
 }
 
 
@@ -247,13 +511,20 @@ if (
 |--------------------------------------------------------------------------
 | UPDATE EMPLOYEE
 |--------------------------------------------------------------------------
+|
+| Supports:
+| PUT /employees/{id}
+| POST + X-HTTP-Method-Override: PUT
+|
 */
 
 $isUpdateRequest =
     $method === "PUT" ||
     (
         $method === "POST" &&
-        isset($_SERVER["HTTP_X_HTTP_METHOD_OVERRIDE"]) &&
+        isset(
+            $_SERVER["HTTP_X_HTTP_METHOD_OVERRIDE"]
+        ) &&
         strtoupper(
             $_SERVER["HTTP_X_HTTP_METHOD_OVERRIDE"]
         ) === "PUT"
@@ -269,6 +540,10 @@ if (
     )
 ) {
 
+    AuthMiddleware::check();
+    RoleMiddleware::check("Admin");
+
+
     $employeeId =
         $matches[1];
 
@@ -282,15 +557,19 @@ if (
         Response::json(
             [
                 "success" => false,
-                "message" => "Invalid CSRF token."
+                "message" =>
+                    "Invalid CSRF token."
             ],
             403
         );
+
+        exit;
     }
 
 
     require_once __DIR__ .
         "/../controllers/EmployeeController.php";
+
 
     $controller =
         new EmployeeController();
@@ -325,6 +604,22 @@ if (
     }
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | PROFILE PHOTO FOR ADMIN UPDATE
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        isset($_FILES["profile_photo"]) &&
+        $_FILES["profile_photo"]["error"] !== UPLOAD_ERR_NO_FILE
+    ) {
+
+        $data["profile_photo"] =
+            $_FILES["profile_photo"];
+    }
+
+
     $result =
         $controller->updateEmployee(
             $employeeId,
@@ -338,6 +633,8 @@ if (
             $result,
             200
         );
+
+        exit;
     }
 
 
@@ -345,6 +642,8 @@ if (
         $result,
         400
     );
+
+    exit;
 }
 
 
@@ -363,12 +662,17 @@ if (
     )
 ) {
 
+    AuthMiddleware::check();
+    RoleMiddleware::check("Admin");
+
+
     $employeeId =
         $matches[1];
 
 
     require_once __DIR__ .
         "/../controllers/EmployeeController.php";
+
 
     $controller =
         new EmployeeController();
@@ -386,13 +690,17 @@ if (
             $result,
             200
         );
+
+        exit;
     }
 
 
     Response::json(
         $result,
-        404
+        400
     );
+
+    exit;
 }
 
 
@@ -414,6 +722,10 @@ if (
     $path === "/users"
 ) {
 
+    AuthMiddleware::check();
+    RoleMiddleware::check("Admin");
+
+
     if (
         !CsrfMiddleware::validateToken(
             $_POST["csrf_token"] ?? ""
@@ -423,15 +735,19 @@ if (
         Response::json(
             [
                 "success" => false,
-                "message" => "Invalid CSRF token."
+                "message" =>
+                    "Invalid CSRF token."
             ],
             403
         );
+
+        exit;
     }
 
 
     require_once __DIR__ .
         "/../controllers/UserController.php";
+
 
     $controller =
         new UserController();
@@ -454,6 +770,8 @@ if (
             $result,
             201
         );
+
+        exit;
     }
 
 
@@ -461,6 +779,8 @@ if (
         $result,
         400
     );
+
+    exit;
 }
 
 
@@ -482,8 +802,13 @@ if (
     $path === "/departments"
 ) {
 
+    AuthMiddleware::check();
+    RoleMiddleware::check("Admin");
+
+
     require_once __DIR__ .
         "/../controllers/DepartmentController.php";
+
 
     $controller =
         new DepartmentController();
@@ -514,6 +839,8 @@ if (
         ],
         200
     );
+
+    exit;
 }
 
 
@@ -532,8 +859,13 @@ if (
     )
 ) {
 
+    AuthMiddleware::check();
+    RoleMiddleware::check("Admin");
+
+
     require_once __DIR__ .
         "/../controllers/DepartmentController.php";
+
 
     $controller =
         new DepartmentController();
@@ -554,10 +886,13 @@ if (
         Response::json(
             [
                 "success" => false,
-                "message" => "Department not found."
+                "message" =>
+                    "Department not found."
             ],
             404
         );
+
+        exit;
     }
 
 
@@ -568,6 +903,8 @@ if (
         ],
         200
     );
+
+    exit;
 }
 
 
@@ -582,6 +919,10 @@ if (
     $path === "/departments"
 ) {
 
+    AuthMiddleware::check();
+    RoleMiddleware::check("Admin");
+
+
     if (
         !CsrfMiddleware::validateToken(
             $_POST["csrf_token"] ?? ""
@@ -591,15 +932,19 @@ if (
         Response::json(
             [
                 "success" => false,
-                "message" => "Invalid CSRF token."
+                "message" =>
+                    "Invalid CSRF token."
             ],
             403
         );
+
+        exit;
     }
 
 
     require_once __DIR__ .
         "/../controllers/DepartmentController.php";
+
 
     $controller =
         new DepartmentController();
@@ -619,6 +964,8 @@ if (
             $result,
             201
         );
+
+        exit;
     }
 
 
@@ -626,6 +973,8 @@ if (
         $result,
         400
     );
+
+    exit;
 }
 
 
@@ -633,6 +982,11 @@ if (
 |--------------------------------------------------------------------------
 | UPDATE DEPARTMENT
 |--------------------------------------------------------------------------
+|
+| Supports:
+| PUT /departments/{id}
+| POST + X-HTTP-Method-Override: PUT
+|
 */
 
 $isDepartmentUpdateRequest =
@@ -657,6 +1011,10 @@ if (
     )
 ) {
 
+    AuthMiddleware::check();
+    RoleMiddleware::check("Admin");
+
+
     if (
         !CsrfMiddleware::validateToken(
             $_POST["csrf_token"] ?? ""
@@ -666,15 +1024,19 @@ if (
         Response::json(
             [
                 "success" => false,
-                "message" => "Invalid CSRF token."
+                "message" =>
+                    "Invalid CSRF token."
             ],
             403
         );
+
+        exit;
     }
 
 
     require_once __DIR__ .
         "/../controllers/DepartmentController.php";
+
 
     $controller =
         new DepartmentController();
@@ -699,6 +1061,8 @@ if (
             $result,
             200
         );
+
+        exit;
     }
 
 
@@ -706,6 +1070,8 @@ if (
         $result,
         400
     );
+
+    exit;
 }
 
 
@@ -724,8 +1090,13 @@ if (
     )
 ) {
 
+    AuthMiddleware::check();
+    RoleMiddleware::check("Admin");
+
+
     require_once __DIR__ .
         "/../controllers/DepartmentController.php";
+
 
     $controller =
         new DepartmentController();
@@ -747,6 +1118,8 @@ if (
             $result,
             200
         );
+
+        exit;
     }
 
 
@@ -754,6 +1127,8 @@ if (
         $result,
         400
     );
+
+    exit;
 }
 
 
@@ -775,8 +1150,13 @@ if (
     $path === "/dashboard/summary"
 ) {
 
+    AuthMiddleware::check();
+    RoleMiddleware::check("Admin");
+
+
     require_once __DIR__ .
         "/../controllers/DashboardController.php";
+
 
     $controller =
         new DashboardController();
@@ -793,6 +1173,8 @@ if (
         ],
         200
     );
+
+    exit;
 }
 
 
@@ -807,8 +1189,13 @@ if (
     $path === "/dashboard/employees-by-department"
 ) {
 
+    AuthMiddleware::check();
+    RoleMiddleware::check("Admin");
+
+
     require_once __DIR__ .
         "/../controllers/DashboardController.php";
+
 
     $controller =
         new DashboardController();
@@ -825,6 +1212,8 @@ if (
         ],
         200
     );
+
+    exit;
 }
 
 
@@ -837,7 +1226,8 @@ if (
 Response::json(
     [
         "success" => false,
-        "message" => "API endpoint not found."
+        "message" =>
+            "API endpoint not found."
     ],
     404
 );

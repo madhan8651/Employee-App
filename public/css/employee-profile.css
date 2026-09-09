@@ -1,0 +1,1230 @@
+/* =========================================================
+   EMPLOYEE PROFILE
+========================================================= */
+
+:root {
+
+    --bg: #f5f7fb;
+
+    --panel: #ffffff;
+
+    --panel-border: #e5e7eb;
+
+    --text: #111827;
+
+    --muted: #6b7280;
+
+    --accent: #4f46e5;
+
+    --shadow:
+        0 18px 40px
+        rgba(17, 24, 39, 0.08);
+}
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body {
+
+    margin: 0;
+
+    min-height: 100vh;
+
+    padding: 40px 24px;
+
+    background: var(--bg);
+
+    font-family:
+        "Inter",
+        "Segoe UI",
+        sans-serif;
+
+    color: var(--text);
+}
+
+
+/* =========================================================
+   MAIN SHELL
+========================================================= */
+
+.profile-shell {
+
+    width: min(100%, 900px);
+
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   MAIN CARD
+========================================================= */
+
+.profile-card {
+
+    background: var(--panel);
+
+    border:
+        1px solid
+        var(--panel-border);
+
+    border-radius: 18px;
+
+    box-shadow: var(--shadow);
+
+    padding: 2rem;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.profile-brand {
+
+    text-align: center;
+
+    margin-bottom: 2.5rem;
+}
+
+
+/* =========================================================
+   BRAND LOGO
+========================================================= */
+
+.brand-logo {
+
+    width: 64px;
+
+    height: 64px;
+
+    margin:
+        0
+        auto
+        1rem;
+
+    border-radius: 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #111827 0%,
+            #4f46e5 100%
+        );
+
+    color: #ffffff;
+
+    font-size: 1.6rem;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   BRAND TEXT
+========================================================= */
+
+.brand-text h2 {
+
+    margin: 0;
+
+    font-size: 1.8rem;
+
+    font-weight: 800;
+
+    letter-spacing: -0.04em;
+
+    color: var(--text);
+}
+
+
+.brand-text p {
+
+    margin:
+        0.4rem
+        0
+        0;
+
+    color: var(--muted);
+
+    font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.profile-header {
+
+    text-align: center;
+
+    margin-bottom: 2.5rem;
+}
+
+
+/* =========================================================
+   EYEBROW
+========================================================= */
+
+.eyebrow {
+
+    display: inline-block;
+
+    margin-bottom: 0.7rem;
+
+    padding:
+        0.42rem
+        0.8rem;
+
+    border-radius: 999px;
+
+    background:
+        rgba(79, 70, 229, 0.08);
+
+    color: var(--accent);
+
+    font-size: 0.72rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   PAGE TITLE
+========================================================= */
+
+.profile-header h1 {
+
+    margin: 0;
+
+    font-size: 2rem;
+
+    font-weight: 800;
+
+    letter-spacing: -0.04em;
+
+    color: var(--text);
+}
+
+
+/* =========================================================
+   PAGE DESCRIPTION
+========================================================= */
+
+.profile-header p {
+
+    margin:
+        0.6rem
+        0
+        0;
+
+    color: var(--muted);
+
+    font-size: 0.96rem;
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+#message {
+
+    margin-bottom: 1.5rem;
+}
+
+
+/* =========================================================
+   PROFILE CONTAINER
+========================================================= */
+
+#profileContainer {
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   PROFILE PHOTO SECTION
+========================================================= */
+
+.profile-photo-section {
+
+    text-align: center;
+
+    margin-bottom: 2rem;
+}
+
+
+/* =========================================================
+   PROFILE PHOTO WRAPPER
+========================================================= */
+
+.profile-photo-wrapper {
+
+    position: relative;
+
+    width: 90px;
+
+    height: 90px;
+
+    margin:
+        0
+        auto
+        1rem;
+
+    overflow: visible;
+}
+
+
+/* =========================================================
+   PROFILE PHOTO
+========================================================= */
+
+.profile-photo {
+
+    width: 90px;
+
+    height: 90px;
+
+    object-fit: cover;
+
+    display: block;
+
+    border-radius: 50%;
+
+    background:
+        rgba(79, 70, 229, 0.08);
+
+    border:
+        4px solid
+        #eef2ff;
+
+    box-shadow:
+        0 8px 20px
+        rgba(17, 24, 39, 0.08);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   PHOTO PLACEHOLDER
+========================================================= */
+
+.profile-photo.placeholder,
+.profile-photo-placeholder {
+
+    width: 90px;
+
+    height: 90px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(79, 70, 229, 0.08);
+
+    border:
+        4px solid
+        #eef2ff;
+
+    color: var(--accent);
+
+    font-size: 1.5rem;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   PROFILE NAME
+========================================================= */
+
+.profile-name {
+
+    font-size: 1.4rem;
+
+    font-weight: 800;
+
+    color: var(--text);
+}
+
+
+/* =========================================================
+   PROFILE ID
+========================================================= */
+
+.profile-id {
+
+    margin-top: 4px;
+
+    color: var(--muted);
+
+    font-size: 0.85rem;
+}
+
+
+/* =========================================================
+   PROFILE DETAILS
+========================================================= */
+
+.profile-details {
+
+    border:
+        1px solid
+        var(--panel-border);
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    background: #ffffff;
+}
+
+
+/* =========================================================
+   PROFILE ROW
+========================================================= */
+
+.profile-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+
+    min-height: 58px;
+
+    padding:
+        15px
+        18px;
+
+    border-bottom:
+        1px solid
+        #f0f1f3;
+
+    background: #ffffff;
+
+    transition:
+        background 0.2s ease,
+        opacity 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+/* =========================================================
+   LAST ROW
+========================================================= */
+
+.profile-row:last-child {
+
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+.profile-row:hover {
+
+    background: #fafbff;
+}
+
+
+/* =========================================================
+   LABEL
+========================================================= */
+
+.profile-row > span {
+
+    width: 42%;
+
+    flex-shrink: 0;
+
+    color: var(--muted);
+
+    font-size: 0.85rem;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   VALUE
+========================================================= */
+
+.profile-row > strong {
+
+    flex: 1;
+
+    text-align: right;
+
+    font-size: 0.9rem;
+
+    font-weight: 600;
+
+    color: var(--text);
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   ADDRESS
+========================================================= */
+
+.profile-row > strong#address {
+
+    white-space: normal;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   EDITABLE ROW
+   Phone + Address
+========================================================= */
+
+.profile-row.editable-row {
+
+    background:
+        rgba(79, 70, 229, 0.045);
+
+    border-left:
+        3px solid
+        var(--accent);
+
+    opacity: 1;
+}
+
+
+/* =========================================================
+   EDITABLE ROW LABEL
+========================================================= */
+
+.profile-row.editable-row > span {
+
+    color: var(--accent);
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   EDITABLE ROW INPUT
+========================================================= */
+
+.profile-row.editable-row input,
+.profile-row.editable-row textarea {
+
+    background: #ffffff;
+
+    border:
+        1px solid
+        #c7c9f8;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(79, 70, 229, 0.05);
+}
+
+
+/* =========================================================
+   EDITABLE INPUT
+========================================================= */
+
+.profile-row input {
+
+    flex: 1;
+
+    width: 55%;
+
+    padding:
+        0.6rem
+        0.75rem;
+
+    border:
+        1px solid
+        var(--panel-border);
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: var(--text);
+
+    font-family: inherit;
+
+    font-size: 0.88rem;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   INPUT FOCUS
+========================================================= */
+
+.profile-row input:focus {
+
+    border-color: var(--accent);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(79, 70, 229, 0.10);
+
+    outline: none;
+}
+
+
+/* =========================================================
+   ADDRESS TEXTAREA
+========================================================= */
+
+.profile-row textarea {
+
+    flex: 1;
+
+    width: 55%;
+
+    min-height: 80px;
+
+    padding:
+        0.6rem
+        0.75rem;
+
+    border:
+        1px solid
+        var(--panel-border);
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: var(--text);
+
+    font-family: inherit;
+
+    font-size: 0.88rem;
+
+    resize: vertical;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   TEXTAREA FOCUS
+========================================================= */
+
+.profile-row textarea:focus {
+
+    border-color: var(--accent);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(79, 70, 229, 0.10);
+
+    outline: none;
+}
+
+
+/* =========================================================
+   EDIT MODE
+   Dim all non-editable fields
+========================================================= */
+
+.profile-edit-form .profile-row:not(.editable-row) {
+
+    background: #f8f8fa;
+
+    opacity: 0.50;
+}
+
+
+/* =========================================================
+   EDIT MODE - DIM LABELS
+========================================================= */
+
+.profile-edit-form .profile-row:not(.editable-row) > span {
+
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   EDIT MODE - DIM VALUES
+========================================================= */
+
+.profile-edit-form .profile-row:not(.editable-row) > strong {
+
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   EDIT MODE - KEEP EDITABLE FIELDS BRIGHT
+========================================================= */
+
+.profile-edit-form .profile-row.editable-row {
+
+    background:
+        rgba(79, 70, 229, 0.045);
+
+    opacity: 1;
+
+    border-left:
+        3px solid
+        var(--accent);
+}
+
+
+/* =========================================================
+   EDIT MODE - EDITABLE LABEL
+========================================================= */
+
+.profile-edit-form .profile-row.editable-row > span {
+
+    color: var(--accent);
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   EDIT MODE - PHOTO HIGHLIGHT
+========================================================= */
+
+body:has(.profile-edit-form) .profile-photo {
+
+    border:
+        4px solid
+        #c7c9f8;
+
+    box-shadow:
+        0 8px 24px
+        rgba(79, 70, 229, 0.18);
+}
+
+
+/* =========================================================
+   EDIT MODE - PHOTO PLACEHOLDER HIGHLIGHT
+========================================================= */
+
+body:has(.profile-edit-form) .profile-photo-placeholder {
+
+    border:
+        4px solid
+        #c7c9f8;
+
+    box-shadow:
+        0 8px 24px
+        rgba(79, 70, 229, 0.18);
+}
+
+
+/* =========================================================
+   PHOTO EDIT ICON
+========================================================= */
+
+.profile-photo-edit {
+
+    position: absolute;
+
+    right: -4px;
+
+    bottom: -4px;
+
+    width: 32px;
+
+    height: 32px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    border:
+        2px solid
+        var(--accent);
+
+    color: var(--accent);
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    z-index: 10;
+
+    box-shadow:
+        0 4px 12px
+        rgba(79, 70, 229, 0.20);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* =========================================================
+   PHOTO EDIT ICON HOVER
+========================================================= */
+
+.profile-photo-edit:hover {
+
+    background: var(--accent);
+
+    color: #ffffff;
+
+    transform: scale(1.08);
+
+    box-shadow:
+        0 6px 16px
+        rgba(79, 70, 229, 0.25);
+}
+
+
+/* =========================================================
+   HIDDEN PHOTO INPUT
+========================================================= */
+
+#profile_photo {
+
+    display: none;
+}
+
+
+/* =========================================================
+   PROFILE ACTIONS
+========================================================= */
+
+.profile-actions {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 1.5rem;
+
+    padding-top: 1.5rem;
+
+    border-top:
+        1px solid
+        var(--panel-border);
+}
+
+
+/* =========================================================
+   COMMON ACTION BUTTON
+========================================================= */
+
+.profile-actions button {
+
+    height: 56px;
+
+    padding:
+        0
+        24px;
+
+    border-radius: 14px;
+
+    font-family:
+        "Inter",
+        "Segoe UI",
+        sans-serif;
+
+    font-size: 0.95rem;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+/* =========================================================
+   EDIT PROFILE BUTTON
+   Same style as + Add User
+========================================================= */
+
+.profile-edit-button {
+
+    min-width: 160px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #1f245f 0%,
+            #4f46e5 100%
+        );
+
+    color: #ffffff;
+
+    box-shadow:
+        0 10px 24px
+        rgba(79, 70, 229, 0.20);
+}
+
+
+.profile-edit-button:hover {
+
+    color: #ffffff;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 12px 28px
+        rgba(79, 70, 229, 0.28);
+}
+
+
+/* =========================================================
+   CHANGE PASSWORD BUTTON
+   White bordered
+========================================================= */
+
+.profile-secondary-button {
+
+    min-width: 200px;
+
+    border:
+        1px solid
+        #dfe2ea;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    color: #111827;
+}
+
+
+.profile-secondary-button:hover {
+
+    color: #111827;
+
+    border-color:
+        #cfd3dc;
+
+    background: #ffffff;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 8px 20px
+        rgba(17, 24, 39, 0.08);
+}
+
+
+/* =========================================================
+   LOGOUT BUTTON
+   White + red border/text
+========================================================= */
+
+.profile-logout-button {
+
+    min-width: 128px;
+
+    border:
+        1px solid
+        #ffb8b8;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    color: #dc2626;
+}
+
+
+.profile-logout-button:hover {
+
+    color: #dc2626;
+
+    border-color:
+        #f87171;
+
+    background: #fffafa;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 8px 20px
+        rgba(220, 38, 38, 0.08);
+}
+
+
+/* =========================================================
+   ACTION ICON
+========================================================= */
+
+.profile-actions .action-icon {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin-right: 7px;
+
+    font-size: 1rem;
+
+    line-height: 1;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status-badge {
+
+    font-size: 0.78rem;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   CANCEL BUTTON
+========================================================= */
+
+.profile-cancel-button {
+
+    height: 56px;
+
+    padding:
+        0
+        24px;
+
+    border:
+        1px solid
+        #dfe2ea;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    color: #111827;
+
+    font-family: inherit;
+
+    font-size: 0.95rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.profile-cancel-button:hover {
+
+    color: #111827;
+
+    border-color:
+        #cfd3dc;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 8px 20px
+        rgba(17, 24, 39, 0.08);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 575.98px) {
+
+    body {
+
+        padding:
+            20px
+            12px;
+    }
+
+
+    .profile-card {
+
+        padding:
+            1.2rem;
+
+        border-radius: 16px;
+    }
+
+
+    .profile-brand {
+
+        margin-bottom: 2rem;
+    }
+
+
+    .brand-logo {
+
+        width: 58px;
+
+        height: 58px;
+
+        font-size: 1.4rem;
+    }
+
+
+    .brand-text h2 {
+
+        font-size: 1.6rem;
+    }
+
+
+    .profile-header h1 {
+
+        font-size: 1.6rem;
+    }
+
+
+    .profile-row {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 6px;
+    }
+
+
+    .profile-row > span {
+
+        width: 100%;
+    }
+
+
+    .profile-row > strong {
+
+        width: 100%;
+
+        text-align: left;
+    }
+
+
+    .profile-row input,
+    .profile-row textarea {
+
+        width: 100%;
+    }
+
+
+    .profile-actions {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 10px;
+    }
+
+
+    .profile-edit-button,
+    .profile-secondary-button,
+    .profile-logout-button,
+    .profile-cancel-button {
+
+        width: 100%;
+
+        min-width: 0;
+
+        height: 54px;
+    }
+
+
+    .profile-photo-edit {
+
+        width: 30px;
+
+        height: 30px;
+
+        right: -3px;
+
+        bottom: -3px;
+
+        font-size: 14px;
+    }
+
+}
