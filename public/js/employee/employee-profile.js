@@ -3,6 +3,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const profileContainer =
         document.getElementById("profileContainer");
 
+    if (profileContainer) {
+        profileContainer.style.maxWidth = "700px";
+        profileContainer.style.marginLeft = "auto";
+        profileContainer.style.marginRight = "auto";
+    }
+
     const message =
         document.getElementById("message");
 
@@ -22,26 +28,13 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-
-        /*
-        |----------------------------------------------------------
-        | Safe message display
-        |----------------------------------------------------------
-        |
-        | textContent is used instead of innerHTML so that
-        | API/server messages are displayed safely.
-        |
-        */
-
         message.textContent =
             text || "Something went wrong.";
-
 
         message.className =
             type === "success"
                 ? "alert alert-success"
                 : "alert alert-danger";
-
 
         message.setAttribute(
             "role",
@@ -53,24 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
             "assertive"
         );
 
-
-        /*
-        |----------------------------------------------------------
-        | Move screen to top
-        |----------------------------------------------------------
-        */
-
         window.scrollTo({
             top: 0,
             behavior: "smooth"
         });
-
-
-        /*
-        |----------------------------------------------------------
-        | Also make sure the message itself is visible
-        |----------------------------------------------------------
-        */
 
         setTimeout(() => {
 
@@ -81,21 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         }, 100);
 
-
-        /*
-        |----------------------------------------------------------
-        | Clear previous timer
-        |----------------------------------------------------------
-        */
-
         clearTimeout(showMessage.timer);
-
-
-        /*
-        |----------------------------------------------------------
-        | Hide message after 4 seconds
-        |----------------------------------------------------------
-        */
 
         showMessage.timer =
             setTimeout(() => {
@@ -158,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
         }
 
-
         return `
             <div class="profile-photo placeholder">
                 No Photo
@@ -180,7 +144,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let data;
 
-
         try {
 
             data =
@@ -199,7 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         }
 
-
         if (
             !response.ok ||
             !data.success
@@ -210,7 +172,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Request failed. Please try again."
             );
         }
-
 
         return data;
     }
@@ -483,30 +444,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 <div class="profile-actions">
 
-
-                    <button
-                        type="button"
-                        id="editProfileButton"
-                        class="profile-edit-button"
-                    >
-                        <span class="action-icon">
-                            ✎
-                        </span>
-
-                        Edit Profile
-                    </button>
-
-
                     <button
                         type="button"
                         id="changePasswordButton"
                         class="profile-secondary-button"
                     >
+
                         <span class="action-icon">
                             🔑
                         </span>
 
                         Change Password
+
                     </button>
 
 
@@ -515,13 +464,14 @@ document.addEventListener("DOMContentLoaded", () => {
                         id="logoutButton"
                         class="profile-logout-button"
                     >
+
                         <span class="action-icon">
                             ➜
                         </span>
 
                         Logout
-                    </button>
 
+                    </button>
 
                 </div>
 
@@ -539,12 +489,40 @@ document.addEventListener("DOMContentLoaded", () => {
                     "editProfileButton"
                 );
 
-
             if (editButton) {
 
                 editButton.addEventListener(
                     "click",
                     showEditForm
+                );
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | VIEW DEPARTMENT BUTTON
+            |--------------------------------------------------------------------------
+            */
+
+            const viewDepartmentButton =
+                document.getElementById(
+                    "viewDepartmentButton"
+                );
+
+            if (viewDepartmentButton) {
+
+                viewDepartmentButton.addEventListener(
+                    "click",
+                    () => {
+
+                        /*
+                         * Department page will be connected here.
+                         */
+
+                        window.location.href =
+    "/Employee_App/routes/auth.php/employees/department";
+
+                    }
                 );
             }
 
@@ -559,7 +537,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById(
                     "changePasswordButton"
                 );
-
 
             if (changePasswordButton) {
 
@@ -586,7 +563,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     "logoutButton"
                 );
 
-
             if (logoutButton) {
 
                 logoutButton.addEventListener(
@@ -608,7 +584,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Load profile error:",
                 error
             );
-
 
             showMessage(
                 error.message ||
@@ -937,7 +912,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     <div class="profile-actions">
 
-
                         <button
                             type="submit"
                             class="profile-edit-button"
@@ -953,7 +927,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         >
                             Cancel
                         </button>
-
 
                     </div>
 
@@ -973,7 +946,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById(
                     "profileForm"
                 );
-
 
             if (profileForm) {
 
@@ -995,7 +967,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     "cancelEditButton"
                 );
 
-
             if (cancelButton) {
 
                 cancelButton.addEventListener(
@@ -1016,7 +987,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     "profile_photo"
                 );
 
-
             if (photoInput) {
 
                 photoInput.addEventListener(
@@ -1033,7 +1003,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Edit profile error:",
                 error
             );
-
 
             showMessage(
                 error.message ||
@@ -1056,7 +1025,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const file =
             event.target.files[0];
 
-
         if (!file) {
             return;
         }
@@ -1075,7 +1043,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 "error"
             );
 
-
             event.target.value = "";
 
             return;
@@ -1091,14 +1058,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const maxSize =
             5 * 1024 * 1024;
 
-
         if (file.size > maxSize) {
 
             showMessage(
                 "Profile photo must be less than 5 MB.",
                 "error"
             );
-
 
             event.target.value = "";
 
@@ -1115,7 +1080,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const reader =
             new FileReader();
 
-
         reader.onload =
             function () {
 
@@ -1123,7 +1087,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     document.querySelector(
                         ".profile-photo-wrapper .profile-photo"
                     );
-
 
                 if (image) {
 
@@ -1138,7 +1101,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     document.querySelector(
                         ".profile-photo-wrapper .placeholder"
                     );
-
 
                 if (placeholder) {
 
@@ -1228,7 +1190,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 "error"
             );
 
-
             phoneInput.focus();
 
             return;
@@ -1252,7 +1213,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 "error"
             );
 
-
             phoneInput.focus();
 
             return;
@@ -1271,7 +1231,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Address cannot be empty.",
                 "error"
             );
-
 
             addressInput.focus();
 

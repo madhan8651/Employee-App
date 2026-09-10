@@ -43,24 +43,38 @@ class Department
 
     // Get department by ID
     public function getDepartmentById($departmentId)
-    {
-        $sql = "
-            SELECT department_id, department_name, description, status
-            FROM departments
-            WHERE department_id = :department_id
-        ";
+{
+    $sql = "
+        SELECT
+            d.department_id,
+            d.department_name,
+            d.description,
+            d.status,
+            COUNT(e.employee_id) AS employee_count
+        FROM departments d
+        LEFT JOIN employees e
+            ON e.department_id = d.department_id
+            AND e.status = 'Active'
+        WHERE d.department_id = :department_id
+        GROUP BY
+            d.department_id,
+            d.department_name,
+            d.description,
+            d.status
+    ";
 
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(
-            ":department_id",
-            $departmentId,
-            PDO::PARAM_INT
-        );
+    $stmt = $this->pdo->prepare($sql);
 
-        $stmt->execute();
+    $stmt->bindValue(
+        ":department_id",
+        $departmentId,
+        PDO::PARAM_INT
+    );
 
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
     // Search departments
     public function searchDepartments($search)

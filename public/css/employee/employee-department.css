@@ -1,0 +1,804 @@
+/* =========================================================
+   EMPLOYEE DEPARTMENT
+========================================================= */
+
+:root {
+
+    --bg: #f5f7fb;
+
+    --panel: #ffffff;
+
+    --panel-border: #e5e7eb;
+
+    --text: #111827;
+
+    --muted: #6b7280;
+
+    --accent: #4f46e5;
+
+    --shadow:
+        0 18px 40px
+        rgba(17, 24, 39, 0.08);
+}
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body {
+
+    margin: 0;
+
+    min-height: 100vh;
+
+    padding: 40px 24px;
+
+    background: var(--bg);
+
+    font-family:
+        "Inter",
+        "Segoe UI",
+        sans-serif;
+
+    color: var(--text);
+}
+
+
+/* =========================================================
+   MAIN SHELL
+========================================================= */
+
+.employee-department-shell {
+
+    width: min(100%, 1150px);
+
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   MAIN CARD
+========================================================= */
+
+.employee-department-card {
+
+    background: var(--panel);
+
+    border:
+        1px solid
+        var(--panel-border);
+
+    border-radius: 18px;
+
+    box-shadow: var(--shadow);
+
+    padding: 2.5rem;
+}
+
+
+/* =========================================================
+   TOP HEADER
+========================================================= */
+
+.employee-department-top {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-bottom: 2.3rem;
+
+    padding-bottom: 1.7rem;
+
+    border-bottom:
+        1px solid
+        var(--panel-border);
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.employee-department-brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+}
+
+
+/* =========================================================
+   BRAND LOGO
+========================================================= */
+
+.department-brand-logo {
+
+    width: 60px;
+
+    height: 60px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #111827 0%,
+            #4f46e5 100%
+        );
+
+    color: #ffffff;
+
+    font-size: 1.6rem;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 8px 18px
+        rgba(79, 70, 229, 0.15);
+}
+
+
+/* =========================================================
+   BRAND TEXT
+========================================================= */
+
+.department-brand-text {
+
+    text-align: left;
+}
+
+
+.department-brand-text h2 {
+
+    margin: 0;
+
+    font-size: 1.8rem;
+
+    font-weight: 800;
+
+    letter-spacing: -0.04em;
+
+    color: var(--text);
+}
+
+
+.department-brand-text p {
+
+    margin:
+        0.35rem
+        0
+        0;
+
+    color: var(--muted);
+
+    font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.department-back-button {
+
+    height: 52px;
+
+    padding:
+        0
+        20px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    border:
+        1px solid
+        #dfe2ea;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    color: #111827;
+
+    font-family:
+        "Inter",
+        "Segoe UI",
+        sans-serif;
+
+    font-size: 0.92rem;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.department-back-button:hover {
+
+    border-color:
+        #cfd3dc;
+
+    background: #ffffff;
+
+    color: #111827;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 8px 20px
+        rgba(17, 24, 39, 0.08);
+}
+
+
+.department-back-button span {
+
+    font-size: 1.1rem;
+
+    line-height: 1;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.employee-department-header {
+
+    text-align: center;
+
+    margin-bottom: 2.5rem;
+}
+
+
+/* =========================================================
+   EYEBROW
+========================================================= */
+
+.department-eyebrow {
+
+    display: inline-block;
+
+    margin-bottom: 0.7rem;
+
+    padding:
+        0.42rem
+        0.8rem;
+
+    border-radius: 999px;
+
+    background:
+        rgba(79, 70, 229, 0.08);
+
+    color: var(--accent);
+
+    font-size: 0.72rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   PAGE TITLE
+========================================================= */
+
+.employee-department-header h1 {
+
+    margin: 0;
+
+    font-size: 2rem;
+
+    font-weight: 800;
+
+    letter-spacing: -0.04em;
+
+    color: var(--text);
+}
+
+
+/* =========================================================
+   PAGE DESCRIPTION
+========================================================= */
+
+.employee-department-header p {
+
+    margin:
+        0.6rem
+        0
+        0;
+
+    color: var(--muted);
+
+    font-size: 0.96rem;
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+#departmentMessage {
+
+    margin-bottom: 1.5rem;
+}
+
+
+/* =========================================================
+   DEPARTMENT CONTAINER
+========================================================= */
+
+#departmentContainer {
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   DEPARTMENT MAIN CARD
+========================================================= */
+
+.department-info-card {
+
+    border:
+        1px solid
+        var(--panel-border);
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 8px 24px
+        rgba(17, 24, 39, 0.05);
+}
+
+
+/* =========================================================
+   DEPARTMENT CARD HEADER
+========================================================= */
+
+.department-info-header {
+
+    padding:
+        26px
+        28px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f5f3ff 0%,
+            #ffffff 100%
+        );
+
+    border-bottom:
+        1px solid
+        var(--panel-border);
+}
+
+
+/* =========================================================
+   DEPARTMENT ICON
+========================================================= */
+
+.department-info-icon {
+
+    width: 58px;
+
+    height: 58px;
+
+    margin-bottom: 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background:
+        rgba(79, 70, 229, 0.10);
+
+    color: var(--accent);
+
+    font-size: 1.7rem;
+}
+
+
+/* =========================================================
+   DEPARTMENT NAME
+========================================================= */
+
+.department-info-header h2 {
+
+    margin: 0;
+
+    font-size: 1.65rem;
+
+    font-weight: 800;
+
+    color: var(--text);
+}
+
+
+/* =========================================================
+   DEPARTMENT SUBTITLE
+========================================================= */
+
+.department-info-header p {
+
+    margin:
+        0.45rem
+        0
+        0;
+
+    color: var(--muted);
+
+    font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   DEPARTMENT DETAILS GRID
+========================================================= */
+
+.department-info-body {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 0;
+
+    padding: 0;
+}
+
+
+/* =========================================================
+   DETAIL ITEM
+========================================================= */
+
+.department-detail-item {
+
+    min-height: 110px;
+
+    padding:
+        22px
+        26px;
+
+    border-bottom:
+        1px solid
+        #f0f1f3;
+
+    border-right:
+        1px solid
+        #f0f1f3;
+}
+
+
+.department-detail-item:nth-child(2n) {
+
+    border-right: none;
+}
+
+
+/* =========================================================
+   DETAIL LABEL
+========================================================= */
+
+.department-detail-label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--muted);
+
+    font-size: 0.78rem;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.05em;
+}
+
+
+/* =========================================================
+   DETAIL VALUE
+========================================================= */
+
+.department-detail-value {
+
+    display: block;
+
+    color: var(--text);
+
+    font-size: 1rem;
+
+    font-weight: 700;
+
+    line-height: 1.5;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.department-description {
+
+    grid-column: 1 / -1;
+
+    min-height: 130px;
+
+    border-right: none;
+}
+
+
+.department-description .department-detail-value {
+
+    color: var(--muted);
+
+    font-size: 0.92rem;
+
+    font-weight: 500;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   EMPLOYEE COUNT
+========================================================= */
+
+.department-employee-count {
+
+    color: var(--accent);
+
+    font-size: 1.3rem;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   YOUR DESIGNATION
+========================================================= */
+
+.department-designation {
+
+    color: var(--accent);
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.department-loading {
+
+    padding: 40px;
+
+    text-align: center;
+
+    color: var(--muted);
+
+    font-size: 0.95rem;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.department-empty {
+
+    padding: 50px 30px;
+
+    text-align: center;
+
+    border:
+        1px solid
+        var(--panel-border);
+
+    border-radius: 16px;
+
+    background: #ffffff;
+}
+
+
+.department-empty-icon {
+
+    font-size: 2.5rem;
+
+    margin-bottom: 12px;
+}
+
+
+.department-empty h3 {
+
+    margin: 0;
+
+    font-size: 1.2rem;
+
+    font-weight: 800;
+}
+
+
+.department-empty p {
+
+    margin:
+        8px
+        0
+        0;
+
+    color: var(--muted);
+
+    font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    body {
+
+        padding:
+            20px
+            12px;
+    }
+
+
+    .employee-department-card {
+
+        padding:
+            1.2rem;
+
+        border-radius: 16px;
+    }
+
+
+    /* =====================================================
+       TOP HEADER
+    ====================================================== */
+
+    .employee-department-top {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 18px;
+
+        margin-bottom: 2rem;
+    }
+
+
+    .employee-department-brand {
+
+        justify-content: flex-start;
+    }
+
+
+    .department-brand-logo {
+
+        width: 56px;
+
+        height: 56px;
+
+        font-size: 1.4rem;
+    }
+
+
+    .department-brand-text h2 {
+
+        font-size: 1.5rem;
+    }
+
+
+    .department-brand-text p {
+
+        font-size: 0.82rem;
+    }
+
+
+    /* =====================================================
+       BACK BUTTON
+    ====================================================== */
+
+    .department-back-button {
+
+        width: 100%;
+    }
+
+
+    /* =====================================================
+       PAGE HEADER
+    ====================================================== */
+
+    .employee-department-header h1 {
+
+        font-size: 1.6rem;
+    }
+
+
+    /* =====================================================
+       DEPARTMENT GRID
+    ====================================================== */
+
+    .department-info-body {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    .department-detail-item {
+
+        border-right: none;
+
+        min-height: auto;
+
+        padding:
+            20px;
+    }
+
+
+    .department-description {
+
+        grid-column: auto;
+    }
+
+}

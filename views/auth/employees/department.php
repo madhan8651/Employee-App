@@ -5,8 +5,6 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once __DIR__ . "/../../../middleware/AuthMiddleware.php";
-require_once __DIR__ . "/../../../middleware/RoleMiddleware.php";
-require_once __DIR__ . "/../../../middleware/CsrfMiddleware.php";
 
 
 /*
@@ -43,7 +41,7 @@ $csrfToken =
     >
 
     <title>
-        Employee Profile - Employee Management System
+        My Department - Employee Management System
     </title>
 
 
@@ -89,12 +87,12 @@ $csrfToken =
 
 
     <!-- =====================================================
-         EMPLOYEE PROFILE CSS
+         DEPARTMENT CSS
     ====================================================== -->
 
     <link
         rel="stylesheet"
-        href="../../../public/css/employee/employee-profile.css"
+        href="../../../public/css/employee/employee-department.css"
     >
 
 </head>
@@ -103,30 +101,30 @@ $csrfToken =
 <body>
 
 
-<div class="profile-shell">
+<div class="employee-department-shell">
 
-    <div class="profile-card">
+    <div class="employee-department-card">
 
 
         <!-- =================================================
              TOP HEADER
         ================================================== -->
 
-        <div class="profile-brand">
+        <div class="employee-department-top">
 
 
             <!-- =============================================
-                 LEFT SIDE
+                 BRAND
             ============================================== -->
 
-            <div class="profile-brand-left">
+            <div class="employee-department-brand">
 
-                <div class="brand-logo">
+                <div class="department-brand-logo">
                     E
                 </div>
 
 
-                <div class="brand-text">
+                <div class="department-brand-text">
 
                     <h2>
                         Employee App
@@ -142,46 +140,22 @@ $csrfToken =
 
 
             <!-- =============================================
-                 RIGHT SIDE
+                 BACK BUTTON
             ============================================== -->
 
-            <div class="profile-header-actions">
+            <button
+                type="button"
+                id="backToProfileButton"
+                class="department-back-button"
+            >
 
+                <span>
+                    ←
+                </span>
 
-                <!-- EDIT PROFILE -->
+                Back to Profile
 
-                <button
-                    type="button"
-                    id="editProfileButton"
-                    class="profile-edit-button"
-                >
-
-                    <span class="action-icon">
-                        ✎
-                    </span>
-
-                    Edit Profile
-
-                </button>
-
-
-                <!-- VIEW DEPARTMENT -->
-
-                <button
-                    type="button"
-                    id="viewDepartmentButton"
-                    class="profile-secondary-button"
-                >
-
-                    <span class="action-icon">
-                        🏢
-                    </span>
-
-                    View Your Department
-
-                </button>
-
-            </div>
+            </button>
 
         </div>
 
@@ -190,21 +164,20 @@ $csrfToken =
              PAGE HEADER
         ================================================== -->
 
-        <div class="profile-header">
+        <div class="employee-department-header">
 
-
-            <span class="eyebrow">
+            <span class="department-eyebrow">
                 Employee Portal
             </span>
 
 
             <h1>
-                My Profile
+                Your Department
             </h1>
 
 
             <p>
-                View your profile information.
+                View your department information and team details.
             </p>
 
         </div>
@@ -214,7 +187,7 @@ $csrfToken =
              MESSAGE
         ================================================== -->
 
-        <div id="message"></div>
+        <div id="departmentMessage"></div>
 
 
         <!-- =================================================
@@ -230,10 +203,10 @@ $csrfToken =
 
 
         <!-- =================================================
-             PROFILE CONTENT
+             DEPARTMENT CONTENT
         ================================================== -->
 
-        <div id="profileContainer">
+        <div id="departmentContainer">
 
         </div>
 
@@ -253,11 +226,11 @@ $csrfToken =
 
 
 <!-- =========================================================
-     EMPLOYEE PROFILE JS
+     EMPLOYEE DEPARTMENT JS
 ========================================================== -->
 
 <script
-    src="../../../public/js/employee/employee-profile.js"
+    src="../../../public/js/employee/employee-department.js"
 ></script>
 
 

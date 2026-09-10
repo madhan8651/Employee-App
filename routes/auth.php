@@ -222,3 +222,61 @@ if (
 
     exit;
 }
+/*
+|--------------------------------------------------------------------------
+| EMPLOYEE PROFILE
+|--------------------------------------------------------------------------
+| Employee-only profile page.
+*/
+
+if (
+    $method === "GET" &&
+    $path === "/employees/profile"
+) {
+
+    require_once __DIR__ .
+        "/../middleware/AuthMiddleware.php";
+
+    require_once __DIR__ .
+        "/../middleware/RoleMiddleware.php";
+
+
+    AuthMiddleware::check();
+
+    RoleMiddleware::check("Employee");
+
+
+    require_once __DIR__ .
+        "/../views/auth/employees/profile.php";
+
+    exit;
+}
+/*
+|--------------------------------------------------------------------------
+| EMPLOYEE DEPARTMENT
+|--------------------------------------------------------------------------
+| Employee-only department information page.
+*/
+
+if (
+    $method === "GET" &&
+    $path === "/employees/department"
+) {
+
+    require_once __DIR__ .
+        "/../middleware/AuthMiddleware.php";
+
+    require_once __DIR__ .
+        "/../middleware/RoleMiddleware.php";
+
+
+    AuthMiddleware::check();
+
+    RoleMiddleware::check("Employee");
+
+
+    require_once __DIR__ .
+        "/../views/auth/employees/department.php";
+
+    exit;
+}

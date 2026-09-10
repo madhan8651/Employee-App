@@ -483,41 +483,54 @@ class Employee
     // =========================
 
     public function getEmployeeByEmail($email)
-    {
-        $sql = "
-            SELECT
-                employee_id,
-                first_name,
-                last_name,
-                email,
-                phone,
-                date_of_birth,
-                gender,
-                date_of_joining,
-                department_id,
-                department,
-                designation,
-                salary,
-                address,
-                profile_photo,
-                status,
-                created_at,
-                updated_at
-            FROM employees
-            WHERE email = :email
-            LIMIT 1
-        ";
+{
+    $sql = "
+        SELECT
+            e.employee_id,
+            e.first_name,
+            e.last_name,
+            e.email,
+            e.phone,
+            e.date_of_birth,
+            e.gender,
+            e.date_of_joining,
+            e.department_id,
+            e.department,
+            e.designation,
+            e.salary,
+            e.address,
+            e.profile_photo,
+            e.status,
+            e.created_at,
+            e.updated_at,
 
-        $stmt =
-            $this->pdo->prepare($sql);
+            d.department_name,
+            d.description AS department_description,
 
-        $stmt->execute([
-            "email" =>
-                $email
-        ]);
+            (
+                SELECT COUNT(*)
+                FROM employees e2
+                WHERE e2.department_id = e.department_id
+                AND e2.status = 'active'
+            ) AS department_employee_count
 
-        return $stmt->fetch();
-    }
+        FROM employees e
+
+        LEFT JOIN departments d
+            ON e.department_id = d.department_id
+
+        WHERE e.email = ?
+        LIMIT 1
+    ";
+
+    $stmt = $this->pdo->prepare($sql);
+
+    $stmt->execute([
+        $email
+    ]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
 
     // =========================

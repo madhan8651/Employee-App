@@ -209,7 +209,165 @@ if (
 
     exit;
 }
+/*
+|--------------------------------------------------------------------------
+| GET LOGGED-IN EMPLOYEE DEPARTMENT
+|--------------------------------------------------------------------------
+*/
 
+if (
+    $method === "GET" &&
+    $path === "/employees/department"
+) {
+
+    AuthMiddleware::check();
+    RoleMiddleware::check("Employee");
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SESSION EMAIL
+    |--------------------------------------------------------------------------
+    */
+
+    if (empty($_SESSION["email"])) {
+
+        Response::json(
+            [
+                "success" => false,
+                "message" =>
+                    "Employee email not found in session."
+            ],
+            401
+        );
+
+        exit;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONTROLLER
+    |--------------------------------------------------------------------------
+    */
+
+    require_once __DIR__ .
+        "/../controllers/EmployeeController.php";
+
+
+    $controller =
+        new EmployeeController();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | GET EMPLOYEE
+    |--------------------------------------------------------------------------
+    */
+
+    $employee =
+        $controller->getEmployeeByEmail(
+            $_SESSION["email"]
+        );
+
+
+    if (!$employee) {
+
+        Response::json(
+            [
+                "success" => false,
+                "message" =>
+                    "Employee profile not found."
+            ],
+            404
+        );
+
+        exit;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DEPARTMENT ID
+    |--------------------------------------------------------------------------
+    */
+
+    if (empty($employee["department_id"])) {
+
+        Response::json(
+            [
+                "success" => false,
+                "message" =>
+                    "Department information not available."
+            ],
+            404
+        );
+
+        exit;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DEPARTMENT CONTROLLER
+    |--------------------------------------------------------------------------
+    */
+
+    require_once __DIR__ .
+        "/../controllers/DepartmentController.php";
+
+
+    $departmentController =
+        new DepartmentController();
+
+
+    $department =
+        $departmentController->getDepartmentById(
+            (int) $employee["department_id"]
+        );
+
+
+    if (!$department) {
+
+        Response::json(
+            [
+                "success" => false,
+                "message" =>
+                    "Department not found."
+            ],
+            404
+        );
+
+        exit;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADD EMPLOYEE-SPECIFIC INFORMATION
+    |--------------------------------------------------------------------------
+    */
+
+    $department["designation"] =
+        $employee["designation"] ?? null;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESPONSE
+    |--------------------------------------------------------------------------
+    */
+
+    Response::json(
+        [
+            "success" => true,
+            "data" => $department
+        ],
+        200
+    );
+
+    exit;
+}
 
 /*
 |--------------------------------------------------------------------------
