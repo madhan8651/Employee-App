@@ -1,33 +1,40 @@
 <?php
 
+require_once __DIR__ . "/BaseController.php";
 require_once __DIR__ . "/../models/Employee.php";
 require_once __DIR__ . "/../services/EmployeeService.php";
+
+use App\Services\EmployeeService;
+
 require_once __DIR__ . "/../utilities/FileUpload.php";
 require_once __DIR__ . "/../config/database.php";
-class EmployeeController
+
+class EmployeeController extends BaseController
 {
     private $employeeModel;
     private $employeeService;
     private $fileUpload;
 
     public function __construct()
-{
-    global $pdo;
+    {
+        global $pdo;
 
-    $this->employeeModel = new Employee($pdo);
+        $this->employeeModel =
+            new Employee($pdo);
 
-    $this->employeeService =
-        new EmployeeService(
-            $this->employeeModel
-        );
+        $this->employeeService =
+            new EmployeeService(
+                $this->employeeModel
+            );
 
-    $uploadDirectory =
-        __DIR__ .
-        "/../public/uploads/employees/";
+        $uploadDirectory =
+            __DIR__ .
+            "/../public/uploads/employees/";
 
-    $this->fileUpload =
-        new FileUpload($uploadDirectory);
-}
+        $this->fileUpload =
+            new FileUpload($uploadDirectory);
+    }
+
 
     // =========================
     // CREATE EMPLOYEE
@@ -85,32 +92,29 @@ class EmployeeController
         }
 
 
-        
-
-
         // =========================
         // PROFILE PHOTO
         // =========================
 
         $profilePhoto = "";
 
-if (
-    $profile_photo !== null &&
-    $profile_photo["error"] !== UPLOAD_ERR_NO_FILE
-) {
+        if (
+            $profile_photo !== null &&
+            $profile_photo["error"] !== UPLOAD_ERR_NO_FILE
+        ) {
 
-    $uploadResult =
-        $this->fileUpload->upload(
-            $profile_photo
-        );
+            $uploadResult =
+                $this->fileUpload->upload(
+                    $profile_photo
+                );
 
-    if (!$uploadResult["success"]) {
-        return $uploadResult;
-    }
+            if (!$uploadResult["success"]) {
+                return $uploadResult;
+            }
 
-    $profilePhoto =
-        $uploadResult["filename"];
-}
+            $profilePhoto =
+                $uploadResult["filename"];
+        }
 
 
         // =========================
@@ -125,15 +129,21 @@ if (
         if (!$statusValidation["success"]) {
             return $statusValidation;
         }
-        $duplicateCheck =
-    $this->employeeService->checkDuplicate(
-        $employee_id,
-        $email
-    );
 
-if (!$duplicateCheck["success"]) {
-    return $duplicateCheck;
-}
+
+        // =========================
+        // CHECK DUPLICATE
+        // =========================
+
+        $duplicateCheck =
+            $this->employeeService->checkDuplicate(
+                $employee_id,
+                $email
+            );
+
+        if (!$duplicateCheck["success"]) {
+            return $duplicateCheck;
+        }
 
 
         // =========================
@@ -262,19 +272,15 @@ if (!$duplicateCheck["success"]) {
         // =========================
 
         if ($success) {
-            return [
-                "success" => true,
-                "message" =>
-                    "Employee created successfully."
-            ];
+            return $this->successResponse(
+                "Employee created successfully."
+            );
         }
 
 
-        return [
-            "success" => false,
-            "message" =>
-                "Failed to create employee."
-        ];
+        return $this->errorResponse(
+            "Failed to create employee."
+        );
     }
 
 
@@ -287,56 +293,65 @@ if (!$duplicateCheck["success"]) {
         return $this->employeeModel
             ->getAllEmployees();
     }
+
+
     // =========================
-// GET PAGINATED EMPLOYEES
-// =========================
+    // GET PAGINATED EMPLOYEES
+    // =========================
 
-public function getEmployeesPaginated($limit, $offset)
-{
-    return $this->employeeModel
-        ->getEmployeesPaginated(
-            $limit,
-            $offset
-        );
-}
-// =========================
-// GET FILTERED EMPLOYEES WITH PAGINATION
-// =========================
+    public function getEmployeesPaginated(
+        $limit,
+        $offset
+    ) {
+        return $this->employeeModel
+            ->getEmployeesPaginated(
+                $limit,
+                $offset
+            );
+    }
 
-public function getFilteredEmployees(
-    $search,
-    $department_id,
-    $status,
-    $sort,
-    $limit,
-    $offset
-) {
-    return $this->employeeModel
-        ->getFilteredEmployees(
-            $search,
-            $department_id,
-            $status,
-            $sort,
-            $limit,
-            $offset
-        );
-}
-// =========================
-// COUNT FILTERED EMPLOYEES
-// =========================
 
-public function countFilteredEmployees(
-    $search,
-    $department_id,
-    $status
-) {
-    return $this->employeeModel
-        ->countFilteredEmployees(
-            $search,
-            $department_id,
-            $status
-        );
-}
+    // =========================
+    // GET FILTERED EMPLOYEES
+    // =========================
+
+    public function getFilteredEmployees(
+        $search,
+        $department_id,
+        $status,
+        $sort,
+        $limit,
+        $offset
+    ) {
+        return $this->employeeModel
+            ->getFilteredEmployees(
+                $search,
+                $department_id,
+                $status,
+                $sort,
+                $limit,
+                $offset
+            );
+    }
+
+
+    // =========================
+    // COUNT FILTERED EMPLOYEES
+    // =========================
+
+    public function countFilteredEmployees(
+        $search,
+        $department_id,
+        $status
+    ) {
+        return $this->employeeModel
+            ->countFilteredEmployees(
+                $search,
+                $department_id,
+                $status
+            );
+    }
+
 
     // =========================
     // SEARCH EMPLOYEES
@@ -413,11 +428,9 @@ public function countFilteredEmployees(
                 );
 
         if (!$employee) {
-            return [
-                "success" => false,
-                "message" =>
-                    "Employee not found."
-            ];
+            return $this->errorResponse(
+                "Employee not found."
+            );
         }
 
 
@@ -533,23 +546,23 @@ public function countFilteredEmployees(
         // =========================
 
         if (
-    isset($_FILES["profile_photo"]) &&
-    $_FILES["profile_photo"]["error"] !==
-    UPLOAD_ERR_NO_FILE
-) {
+            isset($_FILES["profile_photo"]) &&
+            $_FILES["profile_photo"]["error"] !==
+            UPLOAD_ERR_NO_FILE
+        ) {
 
-    $uploadResult =
-        $this->fileUpload->upload(
-            $_FILES["profile_photo"]
-        );
+            $uploadResult =
+                $this->fileUpload->upload(
+                    $_FILES["profile_photo"]
+                );
 
-    if (!$uploadResult["success"]) {
-        return $uploadResult;
-    }
+            if (!$uploadResult["success"]) {
+                return $uploadResult;
+            }
 
-    $data["profile_photo"] =
-        $uploadResult["filename"];
-}
+            $data["profile_photo"] =
+                $uploadResult["filename"];
+        }
 
 
         // =========================
@@ -587,11 +600,9 @@ public function countFilteredEmployees(
             }
 
 
-            return [
-                "success" => true,
-                "message" =>
-                    "Employee updated successfully."
-            ];
+            return $this->successResponse(
+                "Employee updated successfully."
+            );
         }
 
 
@@ -599,118 +610,123 @@ public function countFilteredEmployees(
         // NO UPDATE
         // =========================
 
-        return [
-            "success" => false,
-            "message" =>
-                "No changes were made."
-        ];
+        return $this->errorResponse(
+            "No changes were made."
+        );
     }
 
 
     // =========================
-// DEACTIVATE EMPLOYEE
-// =========================
+    // DEACTIVATE EMPLOYEE
+    // =========================
 
-public function deactivateEmployee($employee_id)
-{
-    $employee =
-        $this->employeeModel->getEmployeeById(
-            $employee_id
+    public function deactivateEmployee($employee_id)
+    {
+        $employee =
+            $this->employeeModel->getEmployeeById(
+                $employee_id
+            );
+
+        if (!$employee) {
+            return $this->errorResponse(
+                "Employee not found."
+            );
+        }
+
+
+        if (
+            strtolower($employee["status"]) === "inactive"
+        ) {
+
+            return $this->errorResponse(
+                "Employee is already inactive."
+            );
+        }
+
+
+        $success =
+            $this->employeeModel->deactivateEmployee(
+                $employee_id
+            );
+
+        if ($success) {
+
+            return $this->successResponse(
+                "Employee deactivated successfully."
+            );
+        }
+
+
+        return $this->errorResponse(
+            "Employee could not be deactivated."
         );
-
-    if (!$employee) {
-
-        return [
-            "success" => false,
-            "message" => "Employee not found."
-        ];
     }
 
-    if (
-        strtolower($employee["status"]) === "inactive"
+
+    // =========================
+    // GET LOGGED-IN EMPLOYEE
+    // =========================
+
+    public function getEmployeeByEmail($email)
+    {
+        return $this->employeeModel
+            ->getEmployeeByEmail($email);
+    }
+
+
+    // =========================
+    // UPDATE LOGGED-IN EMPLOYEE PROFILE
+    // =========================
+
+    public function updateMyProfile(
+        $email,
+        $data
     ) {
 
-        return [
-            "success" => false,
-            "message" => "Employee is already inactive."
-        ];
-    }
+        // Find the logged-in employee
+        $employee =
+            $this->employeeModel
+                ->getEmployeeByEmail(
+                    $email
+                );
 
-    $success =
-        $this->employeeModel->deactivateEmployee(
-            $employee_id
+        if (!$employee) {
+            return $this->errorResponse(
+                "Employee profile not found."
+            );
+        }
+
+
+        // Validate allowed profile fields
+        $validation =
+            $this->employeeService
+                ->validateProfileUpdate(
+                    $data
+                );
+
+        if (!$validation["success"]) {
+            return $validation;
+        }
+
+
+        // Update only allowed fields
+        $success =
+            $this->employeeModel->updateEmployee(
+                $employee["employee_id"],
+                $data
+            );
+
+
+        if ($success) {
+
+            return $this->successResponse(
+                "Profile updated successfully."
+            );
+        }
+
+
+        return $this->errorResponse(
+            "No changes were made."
         );
-
-    if ($success) {
-
-        return [
-            "success" => true,
-            "message" => "Employee deactivated successfully."
-        ];
     }
-
-    return [
-        "success" => false,
-        "message" => "Employee could not be deactivated."
-    ];
-}
-// =========================
-// GET LOGGED-IN EMPLOYEE
-// =========================
-
-public function getEmployeeByEmail($email)
-{
-    return $this->employeeModel
-        ->getEmployeeByEmail($email);
-}
-// =========================
-// UPDATE LOGGED-IN EMPLOYEE PROFILE
-// =========================
-
-public function updateMyProfile($email, $data)
-{
-    // Find the logged-in employee
-    $employee =
-        $this->employeeModel->getEmployeeByEmail($email);
-
-    if (!$employee) {
-
-        return [
-            "success" => false,
-            "message" => "Employee profile not found."
-        ];
-    }
-
-
-    // Validate allowed profile fields
-    $validation =
-        $this->employeeService->validateProfileUpdate($data);
-
-    if (!$validation["success"]) {
-        return $validation;
-    }
-
-
-    // Update only allowed fields
-    $success =
-        $this->employeeModel->updateEmployee(
-            $employee["employee_id"],
-            $data
-        );
-
-
-    if ($success) {
-
-        return [
-            "success" => true,
-            "message" => "Profile updated successfully."
-        ];
-    }
-
-
-    return [
-        "success" => false,
-        "message" => "No changes were made."
-    ];
-}
 }

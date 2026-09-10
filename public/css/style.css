@@ -1806,3 +1806,138 @@ textarea.form-control {
         max-height: 44px;
     }
 }
+/* =========================================================
+   ADD DEPARTMENT PAGE ONLY
+========================================================= */
+
+.department-form-shell {
+    width: 650px;
+    max-width: calc(100% - 40px);
+    margin: 0 auto;
+}
+
+.department-card {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    box-shadow: 0 18px 40px rgba(17, 24, 39, 0.08);
+    padding: 32px;
+}
+
+
+/* FORM */
+
+.department-card form {
+    width: 100%;
+}
+
+.department-card .form-control,
+.department-card .form-select {
+    width: 100%;
+}
+
+
+/* BUTTONS */
+
+.department-card .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.department-card .form-actions .btn {
+    margin: 0;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+    .department-form-shell {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .department-card {
+        padding: 24px;
+    }
+
+}
+/* =========================================================
+   EDIT DEPARTMENT - CARD + FIELDS
+========================================================= */
+
+.department-edit-shell {
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.department-card {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 32px;
+    box-sizing: border-box;
+}
+
+
+/* FORM CONTENT */
+
+.department-card form {
+    width: 420px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+
+/* FIELDS */
+
+.department-card .form-control,
+.department-card .form-select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+/* STATUS */
+
+.department-card .col-md-6 {
+    width: 50%;
+}
+
+
+/* BUTTONS */
+
+.department-card .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+    .department-edit-shell {
+        max-width: 100%;
+    }
+
+    .department-card {
+        padding: 24px;
+    }
+
+    .department-card form {
+        width: 100%;
+    }
+
+    .department-card .col-md-6 {
+        width: 100%;
+    }
+
+}

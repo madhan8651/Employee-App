@@ -54,7 +54,7 @@ if ($departmentId <= 0) {
 
 <link
     rel="stylesheet"
-    href="/Employee_App/public/css/department-view.css"
+    href="/Employee_App/public/css/department/department-view.css"
 >
 
 </head>
@@ -120,13 +120,13 @@ if ($departmentId <= 0) {
 
         <!-- Actions -->
 
-        <div class="form-actions mt-4">
+        <div class="form-actions mt-4 d-flex justify-content-center gap-2">
 
             <a
                 href="index.php"
-                class="btn btn-light border"
+                class="btn btn-add"
             >
-                Back
+               <- Back
             </a>
 
             <a
@@ -151,7 +151,7 @@ const departmentId =
 
 </script>
 
-<script src="../../../../public/js/department-view.js"></script>
+<script src="../../../../public/js/department/department-view.js"></script>
 
 </body>
 

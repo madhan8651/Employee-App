@@ -131,7 +131,7 @@ if ($departmentId <= 0) {
 </div>
 
 
-<script src="/Employee_App/public/js/department-deactivate.js"></script>
+<script src="/Employee_App/public/js/department/department-deactivate.js"></script>
 
 </body>
 

@@ -2,6 +2,7 @@
 
 require_once __DIR__ . "/../../../../middleware/AuthMiddleware.php";
 require_once __DIR__ . "/../../../../middleware/RoleMiddleware.php";
+require_once __DIR__ . "/../../../../middleware/CsrfMiddleware.php";
 
 AuthMiddleware::check();
 RoleMiddleware::check("Admin");
@@ -61,9 +62,9 @@ $csrfToken = CsrfMiddleware::generateToken();
 <body>
 
 
-<div class="employee-shell">
+<div class="department-form-shell">
 
-    <div class="employee-card">
+    <div class="department-card">
 
 
         <!-- Brand -->
@@ -205,7 +206,7 @@ $csrfToken = CsrfMiddleware::generateToken();
 
                 <a
                     href="index.php"
-                    class="btn btn-light border"
+                    class="btn btn-light bg-white bg-opacity-75 border text-dark fw-medium shadow-sm"
                 >
                     Cancel
                 </a>
@@ -237,7 +238,7 @@ const csrfToken =
 </script>
 
 
-<script src="../../../../public/js/department-add.js"></script>
+<script src="../../../../public/js/department/department-add.js"></script>
 
 
 </body>

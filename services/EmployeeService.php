@@ -1,7 +1,14 @@
 <?php
 
-class EmployeeService
+namespace App\Services;
+
+require_once __DIR__ . "/../interfaces/EmployeeServiceInterface.php";
+require_once __DIR__ . "/../traits/ValidationTrait.php";
+
+class EmployeeService implements \EmployeeServiceInterface
 {
+    use \ValidationTrait;
+
     private $employeeModel;
 
     public function __construct($employeeModel)
@@ -38,226 +45,235 @@ class EmployeeService
         ];
     }
 
-public function validateRequiredFields($data)
-{
-    $requiredFields = [
-    "employee_id",
-    "first_name",
-    "last_name",
-    "email",
-    "phone",
-    "date_of_birth",
-    "gender",
-    "date_of_joining",
-    "department_id",
-    "designation",
-    "salary",
-    "address",
-    "status"
-];
+    public function validateRequiredFields($data)
+    {
+        $requiredFields = [
+            "employee_id",
+            "first_name",
+            "last_name",
+            "email",
+            "phone",
+            "date_of_birth",
+            "gender",
+            "date_of_joining",
+            "department_id",
+            "designation",
+            "salary",
+            "address",
+            "status"
+        ];
 
-    foreach ($requiredFields as $field) {
-        if (!isset($data[$field]) || trim($data[$field]) === "") {
+        foreach ($requiredFields as $field) {
+
+            if (
+                !isset($data[$field]) ||
+                $this->isEmpty($data[$field])
+            ) {
+                return [
+                    "success" => false,
+                    "message" => $field === "department_id"
+                        ? "Department is required."
+                        : ucfirst(
+                            str_replace("_", " ", $field)
+                        ) . " is required."
+                ];
+            }
+        }
+
+        return [
+            "success" => true
+        ];
+    }
+
+    public function validateEmail($email)
+    {
+        if (!$this->isValidEmail($email)) {
             return [
                 "success" => false,
-                "message" => $field === "department_id"
-    ? "Department is required."
-    : ucfirst(str_replace("_", " ", $field)) . " is required."
+                "message" => "Invalid email address."
             ];
         }
-    }
 
-    return [
-        "success" => true
-    ];
-}
-public function validateEmail($email)
-{
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         return [
-            "success" => false,
-            "message" => "Invalid email address."
+            "success" => true
         ];
     }
 
-    return [
-        "success" => true
-    ];
-}
-public function validateEmployeeId($employee_id)
-{
-    if (!preg_match('/^EMP[0-9]{3}$/', $employee_id)) {
+    public function validateEmployeeId($employee_id)
+    {
+        if (!preg_match('/^EMP[0-9]{3}$/', $employee_id)) {
+            return [
+                "success" => false,
+                "message" => "Employee ID must be in the format EMP001."
+            ];
+        }
+
         return [
-            "success" => false,
-            "message" => "Employee ID must be in the format EMP001."
+            "success" => true
         ];
     }
 
-    return [
-        "success" => true
-    ];
-}
-public function validatePhone($phone)
-{
-    if (!preg_match('/^[0-9]{10}$/', $phone)) {
+    public function validatePhone($phone)
+    {
+        if (!preg_match('/^[0-9]{10}$/', $phone)) {
+            return [
+                "success" => false,
+                "message" => "Phone number must contain exactly 10 digits."
+            ];
+        }
+
         return [
-            "success" => false,
-            "message" => "Phone number must contain exactly 10 digits."
+            "success" => true
         ];
     }
 
-    return [
-        "success" => true
-    ];
-}
-public function validateDateOfBirth($date_of_birth)
-{
-    if ($date_of_birth > date("Y-m-d")) {
+    public function validateDateOfBirth($date_of_birth)
+    {
+        if ($date_of_birth > date("Y-m-d")) {
+            return [
+                "success" => false,
+                "message" => "Date of birth cannot be a future date."
+            ];
+        }
+
         return [
-            "success" => false,
-            "message" => "Date of birth cannot be a future date."
+            "success" => true
         ];
     }
 
-    return [
-        "success" => true
-    ];
-}
-public function validateDateOfJoining($date_of_joining)
-{
-    if ($date_of_joining > date("Y-m-d")) {
+    public function validateDateOfJoining($date_of_joining)
+    {
+        if ($date_of_joining > date("Y-m-d")) {
+            return [
+                "success" => false,
+                "message" => "Date of joining cannot be a future date."
+            ];
+        }
+
         return [
-            "success" => false,
-            "message" => "Date of joining cannot be a future date."
+            "success" => true
         ];
     }
 
-    return [
-        "success" => true
-    ];
-}
-public function validateSalary($salary)
-{
-    if (!is_numeric($salary) || $salary <= 0) {
+    public function validateSalary($salary)
+    {
+        if (!is_numeric($salary) || $salary <= 0) {
+            return [
+                "success" => false,
+                "message" => "Salary must be greater than 0."
+            ];
+        }
+
         return [
-            "success" => false,
-            "message" => "Salary must be greater than 0."
+            "success" => true
         ];
     }
 
-    return [
-        "success" => true
-    ];
-}
-public function validateGender($gender)
-{
-    if (!in_array($gender, ["Male", "Female", "Other"])) {
+    public function validateGender($gender)
+    {
+        if (!in_array($gender, ["Male", "Female", "Other"])) {
+            return [
+                "success" => false,
+                "message" => "Invalid gender selected."
+            ];
+        }
+
         return [
-            "success" => false,
-            "message" => "Invalid gender selected."
+            "success" => true
         ];
     }
 
-    return [
-        "success" => true
-    ];
-}
-public function validateStatus($status)
-{
-    if (!in_array($status, ["active", "inactive"])) {
+    public function validateStatus($status)
+    {
+        if (!in_array($status, ["active", "inactive"])) {
+            return [
+                "success" => false,
+                "message" => "Invalid status selected."
+            ];
+        }
+
         return [
-            "success" => false,
-            "message" => "Invalid status selected."
+            "success" => true
         ];
     }
 
-    return [
-        "success" => true
-    ];
-}
-// =========================
-// VALIDATE EMPLOYEE PROFILE UPDATE
-// =========================
+    // =========================
+    // VALIDATE EMPLOYEE PROFILE UPDATE
+    // =========================
 
-public function validateProfileUpdate($data)
-{
-    $allowedFields = [
-        "phone",
-        "address",
-        "profile_photo"
-    ];
+    public function validateProfileUpdate($data)
+    {
+        $allowedFields = [
+            "phone",
+            "address",
+            "profile_photo"
+        ];
 
+        foreach ($data as $field => $value) {
 
-    foreach ($data as $field => $value) {
+            if (!in_array($field, $allowedFields)) {
 
-        if (!in_array($field, $allowedFields)) {
+                return [
+                    "success" => false,
+                    "message" =>
+                        "You are not allowed to update this field."
+                ];
+            }
+        }
+
+        // Validate phone if provided
+        if (isset($data["phone"])) {
+
+            $phoneValidation =
+                $this->validatePhone(
+                    $data["phone"]
+                );
+
+            if (!$phoneValidation["success"]) {
+                return $phoneValidation;
+            }
+        }
+
+        // Validate address if provided
+        if (isset($data["address"])) {
+
+            if ($this->isEmpty($data["address"])) {
+
+                return [
+                    "success" => false,
+                    "message" =>
+                        "Address cannot be empty."
+                ];
+            }
+        }
+
+        // Profile photo filename check
+        if (isset($data["profile_photo"])) {
+
+            if (
+                !is_string($data["profile_photo"]) ||
+                $this->isEmpty($data["profile_photo"])
+            ) {
+
+                return [
+                    "success" => false,
+                    "message" =>
+                        "Invalid profile photo."
+                ];
+            }
+        }
+
+        if (empty($data)) {
 
             return [
                 "success" => false,
                 "message" =>
-                    "You are not allowed to update this field."
+                    "No profile changes were provided."
             ];
         }
-    }
-
-
-    // Validate phone if provided
-    if (isset($data["phone"])) {
-
-        $phoneValidation =
-            $this->validatePhone(
-                $data["phone"]
-            );
-
-        if (!$phoneValidation["success"]) {
-            return $phoneValidation;
-        }
-    }
-
-
-    // Validate address if provided
-    if (isset($data["address"])) {
-
-        if (trim($data["address"]) === "") {
-
-            return [
-                "success" => false,
-                "message" =>
-                    "Address cannot be empty."
-            ];
-        }
-    }
-
-
-    // Profile photo filename check
-    if (isset($data["profile_photo"])) {
-
-        if (
-            !is_string($data["profile_photo"]) ||
-            trim($data["profile_photo"]) === ""
-        ) {
-
-            return [
-                "success" => false,
-                "message" =>
-                    "Invalid profile photo."
-            ];
-        }
-    }
-
-
-    if (empty($data)) {
 
         return [
-            "success" => false,
-            "message" =>
-                "No profile changes were provided."
+            "success" => true
         ];
     }
-
-
-    return [
-        "success" => true
-    ];
-}
 }

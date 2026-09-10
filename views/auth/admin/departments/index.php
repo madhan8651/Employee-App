@@ -105,13 +105,20 @@ RoleMiddleware::check("Admin");
             <div class="text-muted small">
                 Department Directory
             </div>
-
-            <a
-                href="add.php"
-                class="btn btn-add"
-            >
-                + Add Department
-            </a>
+            <div class="d-flex align-items-center gap-2">
+                <a
+                    href="/Employee_App/views/auth/admin/dashboard.php"
+                    class="btn btn-light text-dark border shadow-sm px-3"
+                >
+                    <- back
+                </a>
+                <a
+                    href="add.php"
+                    class="btn btn-add"
+                >
+                    + Add Department
+                </a>
+            </div>
 
         </div>
 
@@ -285,7 +292,7 @@ RoleMiddleware::check("Admin");
 </script>
 
 
-<script src="../../../../public/js/department.js"></script>
+<script src="../../../../public/js/department/department.js"></script>
 
 
 </body>

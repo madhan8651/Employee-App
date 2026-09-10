@@ -256,13 +256,24 @@ $csrfToken = CsrfMiddleware::generateToken();
                 </div>
 
             </div>
-
-            <button
-                type="submit"
-                class="btn-user"
+            <div
+                class="d-flex justify-content-center align-items-center gap-2"
             >
-                Create User
-            </button>
+                <a
+                    href="/Employee_App/views/auth/admin/dashboard.php"
+                    class="btn-user"
+                    style="display: inline-flex; justify-content: center; align-items: center; min-width: 110px; height: 42px; text-decoration: none;"
+                >
+                    Cancel
+                </a>
+                <button
+                    type="submit"
+                    class="btn-user"
+                    style="min-width: 110px; height: 42px;"
+                >
+                    Create User
+                </button>
+            </div>
 
         </form>
 
@@ -270,99 +281,10 @@ $csrfToken = CsrfMiddleware::generateToken();
 
 </div>
 
-
-<script>
-
-document
-    .getElementById("userForm")
-    .addEventListener("submit", async function(event) {
-
-        event.preventDefault();
-
-        const form = this;
-
-        const messageBox =
-            document.getElementById("message");
-
-        const formData =
-            new FormData(form);
-
-        messageBox.innerHTML = "";
-
-        try {
-
-            const response = await fetch(
-                "/Employee_App/routes/api.php/users",
-                {
-                    method: "POST",
-                    body: formData,
-                    credentials: "same-origin"
-                }
-            );
-
-            const result =
-                await response.json();
-
-            if (result.success) {
-
-                messageBox.innerHTML =
-                    '<div class="alert alert-success">' +
-                    escapeHtml(result.message) +
-                    '</div>';
-
-                form.reset();
-
-            } else {
-
-                messageBox.innerHTML =
-                    '<div class="alert alert-danger">' +
-                    escapeHtml(result.message) +
-                    '</div>';
-
-            }
-
-            setTimeout(function() {
-
-                messageBox.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
-                });
-
-            }, 100);
-
-        } catch (error) {
-
-            messageBox.innerHTML =
-                '<div class="alert alert-danger">' +
-                'Unable to connect to the server.' +
-                '</div>';
-
-            console.error(error);
-
-        }
-
-    });
-
-
-function escapeHtml(value) {
-
-    const div =
-        document.createElement("div");
-
-    div.textContent =
-        value ?? "";
-
-    return div.innerHTML;
-
-}
-
-</script>
-
-
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
 </script>
-
+<script src="../../../public/js/admin/admin-add user.js"></script>
 </body>
 
 </html>

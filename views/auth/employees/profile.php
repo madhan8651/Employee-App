@@ -92,7 +92,7 @@ $csrfToken =
 
     <link
         rel="stylesheet"
-        href="../../../public/css/employee-profile.css"
+        href="../../../public/css/employee/employee-profile.css"
     >
 
 </head>
@@ -202,7 +202,7 @@ $csrfToken =
 ========================================================== -->
 
 <script
-    src="../../../public/js/employee-profile.js">
+    src="../../../public/js/employee/employee-profile.js">
 </script>
 
 

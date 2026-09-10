@@ -1,6 +1,8 @@
 <?php
 
-class PasswordService
+require_once __DIR__ . "/../interfaces/PasswordServiceInterface.php";
+
+class PasswordService implements PasswordServiceInterface
 {
     public function hash($password)
     {

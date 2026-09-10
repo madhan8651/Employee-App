@@ -50,7 +50,7 @@ RoleMiddleware::check("Admin");
 
     <link
         rel="stylesheet"
-        href="/Employee_App/public/css/dashboard.css?v=2"
+        href="/Employee_App/public/css/admin/dashboard.css?v=2"
     >
 
 
@@ -66,7 +66,7 @@ RoleMiddleware::check("Admin");
 
     <link
         rel="stylesheet"
-        href="/Employee_App/public/css/dashboard-data.css?v=2"
+        href="/Employee_App/public/css/admin/dashboard-data.css?v=2"
     >
 
 </head>
@@ -173,6 +173,7 @@ RoleMiddleware::check("Admin");
         </p>
 
     </div>
+    
 
 
     <!-- Add User -->
@@ -393,7 +394,7 @@ RoleMiddleware::check("Admin");
 <!-- Dashboard JS -->
 
 <script
-    src="/Employee_App/public/js/dashboard.js?v=2">
+    src="/Employee_App/public/js/admin/dashboard.js?v=2">
 </script>
 
 
