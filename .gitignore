@@ -27,3 +27,11 @@ vendor/
 
 # PHPUnit cache
 .phpunit.result.cache
+
+# Project screenshots
+screenshots/
+jira screenshots/
+
+# Project deliverables
+*.docx
+*.xlsx

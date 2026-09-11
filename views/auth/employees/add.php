@@ -527,14 +527,25 @@ $departments = $departmentModel->getActiveDepartments();
 
 
             <!-- Submit -->
+            <div class="d-flex gap-3 mt-3" style="width: 100%;">
+                <a
+                    href="/Employee_App/views/auth/employees/index.php"
+                    class="btn btn-cancel flex-fill"
+                    id="cancelButton"
+                    style="min-width: 0; text-align: center; background-color: #f8f9fa; color: #212529; border: 1px solid #ced4da;"
+                >
+                    Cancel
+                </a>
 
-            <button
-                type="submit"
-                class="btn btn-submit"
-                id="submitButton"
-            >
-                Create Employee
-            </button>
+                <button
+                    type="submit"
+                    class="btn btn-submit flex-fill"
+                    id="submitButton"
+                    style="min-width: 0;"
+                >
+                    Create Employee
+                </button>
+            </div>
 
 
         </form>

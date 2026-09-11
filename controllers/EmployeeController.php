@@ -675,58 +675,123 @@ class EmployeeController extends BaseController
 
 
     // =========================
-    // UPDATE LOGGED-IN EMPLOYEE PROFILE
+// UPDATE LOGGED-IN EMPLOYEE PROFILE
+// =========================
+
+public function updateMyProfile(
+    $email,
+    $data
+) {
+
+    // Find the logged-in employee
+    $employee =
+        $this->employeeModel->getEmployeeByEmail(
+            $email
+        );
+
+    if (!$employee) {
+        return $this->errorResponse(
+            "Employee profile not found."
+        );
+    }
+
+    // Store old profile photo
+    $oldProfilePhoto =
+        $employee["profile_photo"];
+
+    // =========================
+    // HANDLE PROFILE PHOTO
     // =========================
 
-    public function updateMyProfile(
-        $email,
-        $data
+    if (
+        isset($_FILES["profile_photo"]) &&
+        $_FILES["profile_photo"]["error"] !==
+        UPLOAD_ERR_NO_FILE
     ) {
 
-        // Find the logged-in employee
-        $employee =
-            $this->employeeModel
-                ->getEmployeeByEmail(
-                    $email
-                );
-
-        if (!$employee) {
-            return $this->errorResponse(
-                "Employee profile not found."
+        $uploadResult =
+            $this->fileUpload->upload(
+                $_FILES["profile_photo"]
             );
+
+        if (!$uploadResult["success"]) {
+            return $uploadResult;
         }
 
+        // Store only the filename
+        $data["profile_photo"] =
+            $uploadResult["filename"];
+    }
 
-        // Validate allowed profile fields
-        $validation =
-            $this->employeeService
-                ->validateProfileUpdate(
-                    $data
-                );
+    // =========================
+    // VALIDATE PROFILE DATA
+    // =========================
 
-        if (!$validation["success"]) {
-            return $validation;
-        }
-
-
-        // Update only allowed fields
-        $success =
-            $this->employeeModel->updateEmployee(
-                $employee["employee_id"],
+    $validation =
+        $this->employeeService
+            ->validateProfileUpdate(
                 $data
             );
 
+    if (!$validation["success"]) {
+        return $validation;
+    }
 
-        if ($success) {
+    // =========================
+    // UPDATE DATABASE
+    // =========================
 
-            return $this->successResponse(
-                "Profile updated successfully."
-            );
+    $success =
+        $this->employeeModel->updateEmployee(
+            $employee["employee_id"],
+            $data
+        );
+
+    // =========================
+    // SUCCESS
+    // =========================
+
+    if ($success) {
+
+        // Delete old photo only when a new photo was uploaded
+        if (
+            isset($data["profile_photo"]) &&
+            !empty($oldProfilePhoto)
+        ) {
+
+            $oldPhotoPath =
+                __DIR__ .
+                "/../public/uploads/employees/" .
+                $oldProfilePhoto;
+
+            if (file_exists($oldPhotoPath)) {
+                unlink($oldPhotoPath);
+            }
         }
 
-
-        return $this->errorResponse(
-            "No changes were made."
+        return $this->successResponse(
+            "Profile updated successfully."
         );
     }
+
+    // If database update failed, remove newly uploaded photo
+    if (
+        isset($data["profile_photo"]) &&
+        !empty($data["profile_photo"])
+    ) {
+
+        $newPhotoPath =
+            __DIR__ .
+            "/../public/uploads/employees/" .
+            $data["profile_photo"];
+
+        if (file_exists($newPhotoPath)) {
+            unlink($newPhotoPath);
+        }
+    }
+
+    return $this->errorResponse(
+        "No changes were made."
+    );
+}
 }
