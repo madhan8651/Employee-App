@@ -19,37 +19,52 @@ Employee Management System
   <a href="#api-documentation">API Documentation</a>
 </p>
 
-Screenshots
+## 📸 Project Screenshots
 
-A visual overview of the application interface and its main workflows.
+> A visual overview of the Employee Management System and its main workflows.
 
-Authentication
+### 🔐 Authentication
 
 <p align="center">
-  <img src="screenshots/login.png.png" alt="Employee App Login" width="850">
+  <img src="screenshots/login.png.png" alt="Login" width="850">
 </p>
 
-Employee Portal
+---
+
+### 👤 Employee Portal
 
 <table>
 <tr>
-<td width="50%" align="center">
-  <img src="screenshots/employee-profile.png.png" alt="Employee Profile" width="100%">
-  <br><sub>Employee Profile</sub>
+<td align="center" width="50%">
+
+**Employee Profile**
+
+<img src="screenshots/employee-profile.png.png" alt="Employee Profile" width="100%">
+
 </td>
-<td width="50%" align="center">
-  <img src="screenshots/employee-view.png.png" alt="Employee View" width="100%">
-  <br><sub>Employee Details</sub>
+<td align="center" width="50%">
+
+**Employee Details**
+
+<img src="screenshots/employee-view.png.png" alt="Employee View" width="100%">
+
 </td>
 </tr>
+
 <tr>
-<td width="50%" align="center">
-  <img src="screenshots/employee-department.png.png" alt="Employee Department" width="100%">
-  <br><sub>Employee Department</sub>
+<td align="center" width="50%">
+
+**Employee Department**
+
+<img src="screenshots/employee-department.png.png" alt="Employee Department" width="100%">
+
 </td>
-<td width="50%" align="center">
-  <img src="screenshots/employee-edit.png.png" alt="Employee Edit" width="100%">
-  <br><sub>Edit Employee</sub>
+<td align="center" width="50%">
+
+**Edit Employee**
+
+<img src="screenshots/employee-edit.png.png" alt="Employee Edit" width="100%">
+
 </td>
 </tr>
 </table>
@@ -58,7 +73,9 @@ Employee Portal
   <img src="screenshots/change-password.png.png" alt="Change Password" width="850">
 </p>
 
-Employee Management
+---
+
+### 👥 Employee Management
 
 <p align="center">
   <img src="screenshots/employee-management-full.png.png" alt="Employee Management" width="850">
@@ -66,34 +83,51 @@ Employee Management
 
 <table>
 <tr>
-<td width="50%" align="center">
-  <img src="screenshots/add-employee.png.png" alt="Add Employee" width="100%">
-  <br><sub>Add Employee</sub>
+<td align="center" width="50%">
+
+**Add Employee**
+
+<img src="screenshots/add-employee.png.png" alt="Add Employee" width="100%">
+
 </td>
-<td width="50%" align="center">
-  <img src="screenshots/Admin-employee-edit.png.png" alt="Admin Employee Edit" width="100%">
-  <br><sub>Edit Employee</sub>
+<td align="center" width="50%">
+
+**Edit Employee**
+
+<img src="screenshots/Admin-employee-edit.png.png" alt="Admin Employee Edit" width="100%">
+
 </td>
 </tr>
+
 <tr>
-<td width="50%" align="center">
-  <img src="screenshots/Admin-employee-deactivate.png.png" alt="Deactivate Employee" width="100%">
-  <br><sub>Deactivate Employee</sub>
+<td align="center" width="50%">
+
+**Deactivate Employee**
+
+<img src="screenshots/Admin-employee-deactivate.png.png" alt="Deactivate Employee" width="100%">
+
 </td>
-<td width="50%" align="center">
-  <img src="screenshots/add-user-page.png.png" alt="Add User" width="100%">
-  <br><sub>Add User</sub>
+<td align="center" width="50%">
+
+**Add User**
+
+<img src="screenshots/add-user-page.png.png" alt="Add User" width="100%">
+
 </td>
 </tr>
 </table>
 
-Admin Dashboard
+---
+
+### 📊 Admin Dashboard
 
 <p align="center">
   <img src="screenshots/Admin-dashboard-view.png.png" alt="Admin Dashboard" width="850">
 </p>
 
-Department Management
+---
+
+### 🏢 Department Management
 
 <p align="center">
   <img src="screenshots/Admin-department-view.png.png" alt="Department Management" width="850">
@@ -101,23 +135,36 @@ Department Management
 
 <table>
 <tr>
-<td width="50%" align="center">
-  <img src="screenshots/add-department.png.png" alt="Add Department" width="100%">
-  <br><sub>Add Department</sub>
+<td align="center" width="50%">
+
+**Add Department**
+
+<img src="screenshots/add-department.png.png" alt="Add Department" width="100%">
+
 </td>
-<td width="50%" align="center">
-  <img src="screenshots/Admin-department-individual%20view.png.png" alt="View Department" width="100%">
-  <br><sub>View Department</sub>
+<td align="center" width="50%">
+
+**View Department**
+
+<img src="screenshots/Admin-department-individual%20view.png.png" alt="View Department" width="100%">
+
 </td>
 </tr>
+
 <tr>
-<td width="50%" align="center">
-  <img src="screenshots/Admin-department-edit.png.png" alt="Edit Department" width="100%">
-  <br><sub>Edit Department</sub>
+<td align="center" width="50%">
+
+**Edit Department**
+
+<img src="screenshots/Admin-department-edit.png.png" alt="Edit Department" width="100%">
+
 </td>
-<td width="50%" align="center">
-  <img src="screenshots/Admin-department-deactivate.png.png" alt="Deactivate Department" width="100%">
-  <br><sub>Deactivate Department</sub>
+<td align="center" width="50%">
+
+**Deactivate Department**
+
+<img src="screenshots/Admin-department-deactivate.png.png" alt="Deactivate Department" width="100%">
+
 </td>
 </tr>
 </table>
