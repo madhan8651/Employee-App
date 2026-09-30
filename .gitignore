@@ -21,8 +21,7 @@ desktop.ini
 # PHPUnit cache
 .phpunit.result.cache
 
-# Project screenshots
-screenshots/
+# jira screenshots
 jira screenshots/
 
 # Project deliverables
