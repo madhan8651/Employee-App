@@ -4,10 +4,6 @@
 # Uploaded employee files
 public/uploads/
 
-# IDE / Editor files
-.vscode/
-.idea/
-
 # Operating system files
 .DS_Store
 Thumbs.db
@@ -21,9 +17,6 @@ desktop.ini
 *.bak
 *.backup
 *~
-
-# Composer dependencies
-vendor/
 
 # PHPUnit cache
 .phpunit.result.cache
